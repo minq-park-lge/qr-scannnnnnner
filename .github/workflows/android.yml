@@ -1,0 +1,39 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: android-actions/setup-android@v3
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build debug & release APK
+        run: ./gradlew --no-daemon assembleDebug assembleRelease
+
+      - name: Collect APKs
+        run: |
+          mkdir -p dist
+          cp app/build/outputs/apk/debug/*.apk dist/SnapQR-debug.apk
+          cp app/build/outputs/apk/release/*.apk dist/SnapQR-release.apk
+          ls -la dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SnapQR-apk
+          path: dist/*.apk
+          if-no-files-found: error
