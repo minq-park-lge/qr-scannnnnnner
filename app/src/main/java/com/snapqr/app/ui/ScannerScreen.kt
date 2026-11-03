@@ -2,7 +2,11 @@ package com.snapqr.app.ui
 
 import android.os.Build
 import android.view.HapticFeedbackConstants
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -24,6 +28,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FlashlightOff
 import androidx.compose.material.icons.outlined.FlashlightOn
+import androidx.compose.material.icons.outlined.PhotoLibrary
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -32,6 +37,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.launch
+import com.snapqr.app.scan.ImageScanner
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -52,6 +61,15 @@ import com.snapqr.app.scan.ScannerCamera
 fun ScannerScreen(vm: ScanViewModel = viewModel()) {
     val state by vm.state.collectAsStateWithLifecycle()
     val view = LocalView.current
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null) scope.launch {
+            val detection = ImageScanner.scan(context, uri)
+            if (detection != null) vm.onExternalResult(detection)
+            else Toast.makeText(context, "이미지에서 QR 코드를 찾지 못했어요", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     LaunchedEffect(Unit) {
         vm.events.collect { e ->
@@ -87,7 +105,19 @@ fun ScannerScreen(vm: ScanViewModel = viewModel()) {
                 .statusBarsPadding()
                 .padding(horizontal = 12.dp, vertical = 8.dp)
         ) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)) {
+                IconButton(
+                    onClick = {
+                        picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    },
+                    modifier = Modifier.size(48.dp),
+                    colors = IconButtonDefaults.iconButtonColors(
+                        containerColor = Color.Black.copy(alpha = 0.4f),
+                        contentColor = Color.White,
+                    ),
+                ) {
+                    Icon(Icons.Outlined.PhotoLibrary, "갤러리에서 스캔")
+                }
                 TopControls(
                     torchAvailable = state.torchAvailable,
                     torchOn = state.torchOn,
