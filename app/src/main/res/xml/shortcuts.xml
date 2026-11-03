@@ -1,0 +1,13 @@
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="scan"
+        android:enabled="true"
+        android:icon="@drawable/ic_qr_tile"
+        android:shortcutShortLabel="@string/shortcut_scan_short"
+        android:shortcutLongLabel="@string/shortcut_scan_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.snapqr.app"
+            android:targetClass="com.snapqr.app.MainActivity" />
+    </shortcut>
+</shortcuts>

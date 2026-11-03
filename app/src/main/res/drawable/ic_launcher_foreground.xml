@@ -1,0 +1,12 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <!-- 노란 스캔 브래킷 -->
+    <path android:strokeColor="#FFFFD60A" android:strokeWidth="4" android:strokeLineCap="round"
+        android:pathData="M32,44V36a4,4 0,0 1,4 -4h8 M64,32h8a4,4 0,0 1,4 4v8 M76,64v8a4,4 0,0 1,-4 4h-8 M44,76h-8a4,4 0,0 1,-4 -4v-8" />
+    <!-- QR 모듈 -->
+    <group android:translateX="40" android:translateY="40">
+        <path android:fillColor="#FFFFFFFF"
+            android:pathData="M0,0h11v11H0z M2.5,2.5v6h6v-6z M17,0h11v11H17z M19.5,2.5v6h6v-6z M0,17h11v11H0z M2.5,19.5v6h6v-6z M17,17h4v4h-4z M24,17h4v4h-4z M17,24h4v4h-4z M24,24h4v4h-4z M20.5,20.5h4v4h-4z" />
+    </group>
+</vector>
