@@ -5,6 +5,11 @@ import android.os.SystemClock
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.snapqr.app.content.ContentParser
+import com.snapqr.app.content.ScanContent
+import com.snapqr.app.preview.LinkPreviewer
+import com.snapqr.app.preview.PreviewState
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -20,6 +25,10 @@ data class ScanUiState(
     val trackedCorners: List<Offset>? = null,
     /** 확정(잠금)된 스캔 결과. null 이면 스캔 대기 중 */
     val locked: Detection? = null,
+    /** 잠긴 결과의 해석된 내용 */
+    val content: ScanContent? = null,
+    /** 웹 링크일 때 URL 프리뷰 상태 */
+    val preview: PreviewState? = null,
     val torchOn: Boolean = false,
     val torchAvailable: Boolean = false,
 )
@@ -37,6 +46,7 @@ class ScanViewModel(app: Application) : AndroidViewModel(app) {
     val events = _events.receiveAsFlow()
 
     private var hideJob: Job? = null
+    private var previewJob: Job? = null
 
     /** 결과 시트를 닫은 직후 같은 코드가 화면에 남아있어 바로 다시 잡히는 것을 방지 */
     private var suppressedValue: String? = null
@@ -87,14 +97,39 @@ class ScanViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     private fun onLocked(detection: Detection) {
-        // 이후 단계에서 콘텐츠 파싱 / URL 프리뷰 로딩을 연결
+        val content = ContentParser.parse(detection.barcode)
+        val previewUri = when (content) {
+            is ScanContent.Web -> content.uri
+            // 플레이스토어 앱 링크도 스토어 페이지로 앱 이름/아이콘 프리뷰
+            is ScanContent.AppLink -> content.playStorePackage?.let {
+                android.net.Uri.parse("https://play.google.com/store/apps/details?id=$it")
+            }
+            else -> null
+        }
+        _state.update {
+            it.copy(content = content, preview = previewUri?.let { PreviewState.Loading })
+        }
+        previewJob?.cancel()
+        if (previewUri != null) {
+            previewJob = viewModelScope.launch {
+                val result = try {
+                    PreviewState.Loaded(LinkPreviewer.load(previewUri))
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    PreviewState.Failed(e.message ?: e.javaClass.simpleName)
+                }
+                _state.update { s -> if (s.content === content) s.copy(preview = result) else s }
+            }
+        }
     }
 
     fun dismissResult() {
         val locked = _state.value.locked ?: return
         suppressedValue = locked.rawValue
         suppressedLastSeen = SystemClock.elapsedRealtime()
-        _state.update { it.copy(locked = null) }
+        previewJob?.cancel()
+        _state.update { it.copy(locked = null, content = null, preview = null) }
     }
 
     fun toggleTorch() = _state.update { it.copy(torchOn = !it.torchOn) }

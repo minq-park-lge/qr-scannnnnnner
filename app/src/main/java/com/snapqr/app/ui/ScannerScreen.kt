@@ -2,26 +2,50 @@ package com.snapqr.app.ui
 
 import android.os.Build
 import android.view.HapticFeedbackConstants
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.FlashlightOff
+import androidx.compose.material.icons.outlined.FlashlightOn
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.snapqr.app.content.ScanContent
 import com.snapqr.app.scan.QrOverlay
 import com.snapqr.app.scan.ScanEvent
 import com.snapqr.app.scan.ScanViewModel
+import com.snapqr.app.scan.ScanYellow
 import com.snapqr.app.scan.ScannerCamera
 
 @Composable
@@ -40,6 +64,8 @@ fun ScannerScreen(vm: ScanViewModel = viewModel()) {
         }
     }
 
+    BackHandler(enabled = state.content != null) { vm.dismissResult() }
+
     Box(Modifier.fillMaxSize().background(Color.Black)) {
         ScannerCamera(
             modifier = Modifier.fillMaxSize(),
@@ -52,17 +78,81 @@ fun ScannerScreen(vm: ScanViewModel = viewModel()) {
             locked = state.locked != null,
             modifier = Modifier.fillMaxSize(),
         )
-        state.locked?.let {
+
+        // 상단 스크림 + 컨트롤
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .background(Brush.verticalGradient(listOf(Color.Black.copy(alpha = 0.55f), Color.Transparent)))
+                .statusBarsPadding()
+                .padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                TopControls(
+                    torchAvailable = state.torchAvailable,
+                    torchOn = state.torchOn,
+                    onTorch = vm::toggleTorch,
+                )
+            }
+        }
+
+        // 스캔 대기 힌트
+        AnimatedVisibility(
+            visible = state.content == null,
+            enter = fadeIn(),
+            exit = fadeOut(),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .navigationBarsPadding()
+                .padding(bottom = 36.dp),
+        ) {
             Text(
-                it.rawValue,
-                color = Color.Black,
+                if (state.trackedCorners == null) "QR 코드를 비춰주세요" else "인식 중…",
+                color = Color.White,
+                fontSize = 15.sp,
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .navigationBarsPadding()
-                    .padding(24.dp)
-                    .background(Color(0xFFFFD60A), RoundedCornerShape(50))
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                    .background(Color.Black.copy(alpha = 0.45f), RoundedCornerShape(50))
+                    .padding(horizontal = 18.dp, vertical = 10.dp),
             )
         }
+
+        // 결과 카드: 닫힐 때도 마지막 내용을 유지하며 슬라이드 아웃
+        val lastContent = remember { LastValue<ScanContent>() }
+        state.content?.let { lastContent.value = it }
+        AnimatedVisibility(
+            visible = state.content != null,
+            enter = slideInVertically(spring(dampingRatio = 0.8f, stiffness = Spring.StiffnessMediumLow)) { it } + fadeIn(),
+            exit = slideOutVertically { it } + fadeOut(),
+            modifier = Modifier.align(Alignment.BottomCenter),
+        ) {
+            lastContent.value?.let { content ->
+                ResultSheet(
+                    content = content,
+                    preview = if (state.content === content) state.preview else null,
+                    onDismiss = vm::dismissResult,
+                )
+            }
+        }
     }
+}
+
+@Composable
+private fun TopControls(torchAvailable: Boolean, torchOn: Boolean, onTorch: () -> Unit) {
+    if (torchAvailable) {
+        IconButton(
+            onClick = onTorch,
+            modifier = Modifier.size(48.dp),
+            colors = IconButtonDefaults.iconButtonColors(
+                containerColor = if (torchOn) ScanYellow else Color.Black.copy(alpha = 0.4f),
+                contentColor = if (torchOn) Color.Black else Color.White,
+            ),
+        ) {
+            Icon(if (torchOn) Icons.Outlined.FlashlightOn else Icons.Outlined.FlashlightOff, "플래시")
+        }
+    }
+}
+
+/** 리컴포지션 없이 마지막 non-null 값을 기억하는 홀더 (exit 애니메이션용) */
+private class LastValue<T> {
+    var value: T? = null
 }
