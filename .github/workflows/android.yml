@@ -6,6 +6,9 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -38,3 +41,19 @@ jobs:
           name: SnapQR-apk
           path: dist/*.apk
           if-no-files-found: error
+
+      # main 브랜치 빌드는 "latest" 릴리스로 올려서 폰에서 바로 설치할 수 있게 함
+      - name: Publish rolling "latest" release
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git tag -f latest
+          git push -f origin latest
+          NOTES="Automated build of ${GITHUB_SHA::7} ($(git log -1 --pretty=%s))"
+          if gh release view latest >/dev/null 2>&1; then
+            gh release edit latest --title "SnapQR (latest build)" --notes "$NOTES" --prerelease
+            gh release upload latest dist/*.apk --clobber
+          else
+            gh release create latest dist/*.apk --title "SnapQR (latest build)" --notes "$NOTES" --prerelease
+          fi
