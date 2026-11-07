@@ -1,5 +1,7 @@
 package com.snapqr.app.ui
 
+import com.snapqr.app.R
+import androidx.compose.ui.res.stringResource
 import android.os.Build
 import android.view.HapticFeedbackConstants
 import android.widget.Toast
@@ -67,7 +69,7 @@ fun ScannerScreen(vm: ScanViewModel = viewModel()) {
         if (uri != null) scope.launch {
             val detection = ImageScanner.scan(context, uri)
             if (detection != null) vm.onExternalResult(detection)
-            else Toast.makeText(context, "이미지에서 QR 코드를 찾지 못했어요", Toast.LENGTH_SHORT).show()
+            else Toast.makeText(context, R.string.toast_no_qr_in_image, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -116,7 +118,7 @@ fun ScannerScreen(vm: ScanViewModel = viewModel()) {
                         contentColor = Color.White,
                     ),
                 ) {
-                    Icon(Icons.Outlined.PhotoLibrary, "갤러리에서 스캔")
+                    Icon(Icons.Outlined.PhotoLibrary, stringResource(R.string.cd_gallery))
                 }
                 TopControls(
                     torchAvailable = state.torchAvailable,
@@ -137,7 +139,7 @@ fun ScannerScreen(vm: ScanViewModel = viewModel()) {
                 .padding(bottom = 36.dp),
         ) {
             Text(
-                if (state.trackedCorners == null) "QR 코드를 비춰주세요" else "인식 중…",
+                stringResource(if (state.trackedCorners == null) R.string.hint_point else R.string.hint_detecting),
                 color = Color.White,
                 fontSize = 15.sp,
                 modifier = Modifier
@@ -177,7 +179,7 @@ private fun TopControls(torchAvailable: Boolean, torchOn: Boolean, onTorch: () -
                 contentColor = if (torchOn) Color.Black else Color.White,
             ),
         ) {
-            Icon(if (torchOn) Icons.Outlined.FlashlightOn else Icons.Outlined.FlashlightOff, "플래시")
+            Icon(if (torchOn) Icons.Outlined.FlashlightOn else Icons.Outlined.FlashlightOff, stringResource(R.string.cd_torch))
         }
     }
 }

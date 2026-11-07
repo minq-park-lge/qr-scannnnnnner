@@ -1,5 +1,7 @@
 package com.snapqr.app.ui
 
+import com.snapqr.app.R
+import androidx.compose.ui.res.stringResource
 import android.text.format.DateUtils
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.RepeatMode
@@ -181,11 +183,11 @@ fun ResultSheet(
                 }
                 Spacer(Modifier.width(8.dp))
                 FilledTonalIconButton(onClick = { ActionLauncher.copy(context, copyText(content)) }, Modifier.size(52.dp)) {
-                    Icon(Icons.Outlined.ContentCopy, "복사")
+                    Icon(Icons.Outlined.ContentCopy, stringResource(R.string.cd_copy))
                 }
                 Spacer(Modifier.width(8.dp))
                 FilledTonalIconButton(onClick = { ActionLauncher.share(context, content.raw) }, Modifier.size(52.dp)) {
-                    Icon(Icons.Outlined.Share, "공유")
+                    Icon(Icons.Outlined.Share, stringResource(R.string.cd_share))
                 }
             }
         }
@@ -203,7 +205,7 @@ private fun Header(content: ScanContent, onDismiss: () -> Unit) {
         }
         Spacer(Modifier.width(10.dp))
         Text(typeLabel(content), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-        IconButton(onClick = onDismiss) { Icon(Icons.Outlined.Close, "닫기") }
+        IconButton(onClick = onDismiss) { Icon(Icons.Outlined.Close, stringResource(R.string.cd_close)) }
     }
 }
 
@@ -258,7 +260,7 @@ private fun LoadedPreview(original: String, p: LinkPreview) {
                 Icon(Icons.Outlined.Warning, null, tint = Color(0xFFFF9F0A), modifier = Modifier.size(14.dp))
                 Spacer(Modifier.width(4.dp))
                 Text(
-                    "$originalHost → ${p.finalHost} 로 이동",
+                    stringResource(R.string.preview_redirect, originalHost, p.finalHost),
                     fontSize = 12.sp,
                     color = Color(0xFFFF9F0A),
                     maxLines = 1,
@@ -293,7 +295,7 @@ private fun FallbackPreview(original: String, failed: Boolean) {
         HostRow(null, uri.host ?: uri.scheme.orEmpty(), secure = original.startsWith("https", true))
         if (failed) {
             Spacer(Modifier.height(4.dp))
-            Text("미리보기를 불러오지 못했어요", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(stringResource(R.string.preview_failed), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         Spacer(Modifier.height(6.dp))
         UrlText(original)
@@ -324,7 +326,7 @@ private fun HostRow(favicon: String?, host: String, secure: Boolean) {
         Spacer(Modifier.width(6.dp))
         Icon(
             if (secure) Icons.Outlined.Lock else Icons.Outlined.LockOpen,
-            if (secure) "HTTPS" else "보안 연결 아님",
+            stringResource(if (secure) R.string.cd_secure else R.string.cd_not_secure),
             Modifier.size(14.dp),
             tint = if (secure) MaterialTheme.colorScheme.onSurfaceVariant else Color(0xFFFF453A),
         )
@@ -365,42 +367,42 @@ private fun RawBox(text: String) {
 private fun Details(content: ScanContent) {
     val rows: List<Pair<String, String>> = when (content) {
         is ScanContent.Wifi -> listOfNotNull(
-            "네트워크" to content.ssid,
-            content.password?.let { "비밀번호" to it },
-            "보안" to when (content.encryption) {
-                com.google.mlkit.vision.barcode.common.Barcode.WiFi.TYPE_OPEN -> "없음"
+            stringResource(R.string.label_network) to content.ssid,
+            content.password?.let { pw -> stringResource(R.string.label_password) to pw },
+            stringResource(R.string.label_security) to when (content.encryption) {
+                com.google.mlkit.vision.barcode.common.Barcode.WiFi.TYPE_OPEN -> stringResource(R.string.security_none)
                 com.google.mlkit.vision.barcode.common.Barcode.WiFi.TYPE_WEP -> "WEP"
                 else -> "WPA/WPA2/WPA3"
             },
         )
-        is ScanContent.Phone -> listOf("전화번호" to content.number)
-        is ScanContent.Sms -> listOfNotNull("받는 사람" to content.number, content.body?.takeIf { it.isNotBlank() }?.let { "내용" to it })
+        is ScanContent.Phone -> listOf(stringResource(R.string.label_phone_number) to content.number)
+        is ScanContent.Sms -> listOfNotNull(stringResource(R.string.label_recipient) to content.number, content.body?.takeIf { it.isNotBlank() }?.let { stringResource(R.string.label_message) to it })
         is ScanContent.Email -> listOfNotNull(
-            "받는 사람" to content.address,
-            content.subject?.takeIf { it.isNotBlank() }?.let { "제목" to it },
-            content.body?.takeIf { it.isNotBlank() }?.let { "내용" to it },
+            stringResource(R.string.label_recipient) to content.address,
+            content.subject?.takeIf { it.isNotBlank() }?.let { stringResource(R.string.label_subject) to it },
+            content.body?.takeIf { it.isNotBlank() }?.let { stringResource(R.string.label_message) to it },
         )
-        is ScanContent.Geo -> listOf("좌표" to "%.6f, %.6f".format(content.lat, content.lng))
+        is ScanContent.Geo -> listOf(stringResource(R.string.label_coordinates) to "%.6f, %.6f".format(java.util.Locale.US, content.lat, content.lng))
         is ScanContent.Contact -> listOfNotNull(
-            content.name?.let { "이름" to it },
-            content.org?.let { "회사" to it },
-            content.phones.takeIf { it.isNotEmpty() }?.let { "전화" to it.joinToString("\n") },
-            content.emails.takeIf { it.isNotEmpty() }?.let { "이메일" to it.joinToString("\n") },
-            content.urls.takeIf { it.isNotEmpty() }?.let { "웹" to it.joinToString("\n") },
-            content.address?.let { "주소" to it },
+            content.name?.let { stringResource(R.string.label_name) to it },
+            content.org?.let { stringResource(R.string.label_company) to it },
+            content.phones.takeIf { it.isNotEmpty() }?.let { stringResource(R.string.label_phone) to it.joinToString("\n") },
+            content.emails.takeIf { it.isNotEmpty() }?.let { stringResource(R.string.label_email) to it.joinToString("\n") },
+            content.urls.takeIf { it.isNotEmpty() }?.let { stringResource(R.string.label_web) to it.joinToString("\n") },
+            content.address?.let { stringResource(R.string.label_address) to it },
         )
         is ScanContent.Event -> {
             val ctx = LocalContext.current
             listOfNotNull(
-                content.summary?.let { "제목" to it },
+                content.summary?.let { stringResource(R.string.label_title) to it },
                 content.startMillis?.let { s ->
-                    "일시" to DateUtils.formatDateRange(
+                    stringResource(R.string.label_when) to DateUtils.formatDateRange(
                         ctx, s, content.endMillis ?: s,
                         DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_TIME or DateUtils.FORMAT_SHOW_WEEKDAY,
                     )
                 },
-                content.location?.let { "장소" to it },
-                content.description?.let { "설명" to it },
+                content.location?.let { stringResource(R.string.label_location) to it },
+                content.description?.let { stringResource(R.string.label_description) to it },
             )
         }
         is ScanContent.Text, is ScanContent.Web, is ScanContent.AppLink -> emptyList()
@@ -442,7 +444,7 @@ private fun TargetRow(app: TargetApp) {
         }
         Spacer(Modifier.width(8.dp))
         Text(
-            if (app.installed) "${app.label} 앱으로 열려요" else "앱이 설치되어 있지 않아요 · 스토어로 이동",
+            if (app.installed) stringResource(R.string.target_opens_in, app.label) else stringResource(R.string.target_not_installed),
             fontSize = 13.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -456,18 +458,21 @@ private fun copyText(c: ScanContent): String = when (c) {
     else -> c.raw
 }
 
-private fun typeLabel(c: ScanContent) = when (c) {
-    is ScanContent.Web -> if (c.playStorePackage != null) "Google Play 앱" else "웹사이트"
-    is ScanContent.AppLink -> if (c.playStorePackage != null) "Google Play 앱" else "앱 링크"
-    is ScanContent.Wifi -> "Wi-Fi"
-    is ScanContent.Phone -> "전화번호"
-    is ScanContent.Sms -> "문자"
-    is ScanContent.Email -> "이메일"
-    is ScanContent.Geo -> "위치"
-    is ScanContent.Contact -> "연락처"
-    is ScanContent.Event -> "일정"
-    is ScanContent.Text -> "텍스트"
-}
+@Composable
+private fun typeLabel(c: ScanContent): String = stringResource(
+    when (c) {
+        is ScanContent.Web -> if (c.playStorePackage != null) R.string.type_play_app else R.string.type_website
+        is ScanContent.AppLink -> if (c.playStorePackage != null) R.string.type_play_app else R.string.type_app_link
+        is ScanContent.Wifi -> R.string.type_wifi
+        is ScanContent.Phone -> R.string.type_phone
+        is ScanContent.Sms -> R.string.type_sms
+        is ScanContent.Email -> R.string.type_email
+        is ScanContent.Geo -> R.string.type_location
+        is ScanContent.Contact -> R.string.type_contact
+        is ScanContent.Event -> R.string.type_event
+        is ScanContent.Text -> R.string.type_text
+    }
+)
 
 private fun typeIcon(c: ScanContent): ImageVector = when (c) {
     is ScanContent.Web -> if (c.playStorePackage != null) Icons.Outlined.Shop else Icons.Outlined.Language
@@ -488,24 +493,25 @@ private fun primaryIcon(c: ScanContent, target: TargetApp?): ImageVector = when 
     else -> typeIcon(c)
 }
 
+@Composable
 private fun primaryLabel(c: ScanContent, target: TargetApp?): String = when (c) {
     is ScanContent.Web -> when {
-        c.playStorePackage != null -> "Play 스토어에서 보기"
-        target != null -> "${target.label}에서 열기"
-        else -> "열기"
+        c.playStorePackage != null -> stringResource(R.string.action_play_store)
+        target != null -> stringResource(R.string.action_open_in, target.label)
+        else -> stringResource(R.string.action_open)
     }
     is ScanContent.AppLink -> when {
-        c.playStorePackage != null -> "Play 스토어에서 보기"
-        target?.installed == true -> "${target.label} 열기"
-        target?.installed == false -> "스토어에서 설치"
-        else -> "앱에서 열기"
+        c.playStorePackage != null -> stringResource(R.string.action_play_store)
+        target?.installed == true -> stringResource(R.string.action_open_app, target.label)
+        target?.installed == false -> stringResource(R.string.action_install)
+        else -> stringResource(R.string.action_open_in_app)
     }
-    is ScanContent.Wifi -> "Wi-Fi 연결"
-    is ScanContent.Phone -> "전화 걸기"
-    is ScanContent.Sms -> "문자 보내기"
-    is ScanContent.Email -> "메일 쓰기"
-    is ScanContent.Geo -> "지도에서 보기"
-    is ScanContent.Contact -> "연락처에 추가"
-    is ScanContent.Event -> "캘린더에 추가"
-    is ScanContent.Text -> "웹에서 검색"
+    is ScanContent.Wifi -> stringResource(R.string.action_wifi)
+    is ScanContent.Phone -> stringResource(R.string.action_call)
+    is ScanContent.Sms -> stringResource(R.string.action_sms)
+    is ScanContent.Email -> stringResource(R.string.action_email)
+    is ScanContent.Geo -> stringResource(R.string.action_map)
+    is ScanContent.Contact -> stringResource(R.string.action_add_contact)
+    is ScanContent.Event -> stringResource(R.string.action_add_event)
+    is ScanContent.Text -> stringResource(R.string.action_web_search)
 }

@@ -1,5 +1,6 @@
 package com.snapqr.app.content
 
+import com.snapqr.app.R
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -130,7 +131,7 @@ object ActionLauncher {
             "intent" -> openIntentUri(context, content.raw)
             else -> {
                 if (!tryStart(context, Intent(Intent.ACTION_VIEW, uri).addCategory(Intent.CATEGORY_BROWSABLE))) {
-                    toast(context, "이 링크를 열 수 있는 앱이 없어요 (${uri.scheme}://)")
+                    toast(context, context.getString(R.string.toast_no_app_for_scheme, uri.scheme))
                 }
             }
         }
@@ -141,7 +142,7 @@ object ActionLauncher {
         val intent = try {
             Intent.parseUri(raw, Intent.URI_INTENT_SCHEME)
         } catch (_: URISyntaxException) {
-            toast(context, "잘못된 앱 링크예요")
+            toast(context, context.getString(R.string.toast_invalid_link))
             return
         }
         val fallbackUrl = intent.getStringExtra("browser_fallback_url")
@@ -163,7 +164,7 @@ object ActionLauncher {
             }
         }
         if (targetPackage != null && openPlayStore(context, targetPackage)) return
-        toast(context, "이 링크를 열 수 있는 앱이 없어요")
+        toast(context, context.getString(R.string.toast_no_app_for_link))
     }
 
     // endregion
@@ -201,7 +202,7 @@ object ActionLauncher {
     }
 
     private fun openWifiSettings(context: Context, wifi: ScanContent.Wifi) {
-        if (wifi.password != null) toast(context, "비밀번호를 복사했어요. \"${wifi.ssid}\" 에 연결하세요")
+        if (wifi.password != null) toast(context, context.getString(R.string.toast_wifi_pw_copied, wifi.ssid))
         val panel = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) Intent(Settings.Panel.ACTION_WIFI)
         else Intent(Settings.ACTION_WIFI_SETTINGS)
         start(context, panel)
@@ -242,7 +243,7 @@ object ActionLauncher {
         val cm = context.getSystemService(ClipboardManager::class.java) ?: return
         cm.setPrimaryClip(ClipData.newPlainText(label, text))
         // Android 13+ 는 시스템이 복사 알림을 띄우므로 중복 토스트 생략
-        if (!silent && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) toast(context, "복사했어요")
+        if (!silent && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) toast(context, context.getString(R.string.toast_copied))
     }
 
     fun share(context: Context, text: String) {
@@ -264,7 +265,7 @@ object ActionLauncher {
     }
 
     private fun start(context: Context, intent: Intent) {
-        if (!tryStart(context, intent)) toast(context, "이 작업을 처리할 앱이 없어요")
+        if (!tryStart(context, intent)) toast(context, context.getString(R.string.toast_no_app))
     }
 
     private fun toast(context: Context, msg: String) = Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()

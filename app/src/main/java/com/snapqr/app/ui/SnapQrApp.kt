@@ -1,5 +1,7 @@
 package com.snapqr.app.ui
 
+import com.snapqr.app.R
+import androidx.compose.ui.res.stringResource
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -90,12 +92,12 @@ private fun PermissionScreen(onRequest: () -> Unit) {
             Icon(Icons.Outlined.CameraAlt, null, tint = Color.White, modifier = Modifier.size(56.dp))
             Spacer(Modifier.height(20.dp))
             Text(
-                "QR 코드를 스캔하려면\n카메라 권한이 필요해요",
+                stringResource(R.string.perm_message),
                 color = Color.White,
                 textAlign = TextAlign.Center,
             )
             Spacer(Modifier.height(24.dp))
-            Button(onClick = onRequest) { Text("카메라 권한 허용") }
+            Button(onClick = onRequest) { Text(stringResource(R.string.perm_button)) }
         }
     }
 }

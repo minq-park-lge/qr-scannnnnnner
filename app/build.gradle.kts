@@ -14,6 +14,9 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0.0"
+
+        // 지원 언어만 APK 에 포함 (라이브러리의 불필요한 번역 리소스 제거)
+        resourceConfigurations += listOf("en", "fr", "es", "ja", "ko", "zh")
     }
 
     buildTypes {
