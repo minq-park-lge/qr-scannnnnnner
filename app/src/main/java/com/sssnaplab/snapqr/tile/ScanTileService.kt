@@ -1,4 +1,4 @@
-package com.snapqr.app.tile
+package com.sssnaplab.snapqr.tile
 
 import android.annotation.SuppressLint
 import android.app.PendingIntent
@@ -6,7 +6,7 @@ import android.content.Intent
 import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import com.snapqr.app.MainActivity
+import com.sssnaplab.snapqr.MainActivity
 
 /** 빠른 설정 패널에서 한 번에 스캐너 실행 */
 class ScanTileService : TileService() {

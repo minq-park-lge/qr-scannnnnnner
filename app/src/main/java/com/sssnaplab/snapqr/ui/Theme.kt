@@ -1,10 +1,10 @@
-package com.snapqr.app.ui
+package com.sssnaplab.snapqr.ui
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import com.snapqr.app.scan.ScanYellow
+import com.sssnaplab.snapqr.scan.ScanYellow
 
 private val Colors = darkColorScheme(
     primary = ScanYellow,

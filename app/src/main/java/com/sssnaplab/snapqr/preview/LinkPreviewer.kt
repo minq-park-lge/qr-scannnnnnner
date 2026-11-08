@@ -1,4 +1,4 @@
-package com.snapqr.app.preview
+package com.sssnaplab.snapqr.preview
 
 import android.net.Uri
 import android.util.LruCache

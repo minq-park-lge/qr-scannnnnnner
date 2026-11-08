@@ -1,6 +1,6 @@
-package com.snapqr.app.content
+package com.sssnaplab.snapqr.content
 
-import com.snapqr.app.R
+import com.sssnaplab.snapqr.R
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager

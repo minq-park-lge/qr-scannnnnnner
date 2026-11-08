@@ -1,4 +1,4 @@
-package com.snapqr.app.scan
+package com.sssnaplab.snapqr.scan
 
 import android.content.Context
 import android.net.Uri

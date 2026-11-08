@@ -1,14 +1,14 @@
-package com.snapqr.app.scan
+package com.sssnaplab.snapqr.scan
 
 import android.app.Application
 import android.os.SystemClock
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.snapqr.app.content.ContentParser
-import com.snapqr.app.content.ScanContent
-import com.snapqr.app.preview.LinkPreviewer
-import com.snapqr.app.preview.PreviewState
+import com.sssnaplab.snapqr.content.ContentParser
+import com.sssnaplab.snapqr.content.ScanContent
+import com.sssnaplab.snapqr.preview.LinkPreviewer
+import com.sssnaplab.snapqr.preview.PreviewState
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel

@@ -1,6 +1,6 @@
-package com.snapqr.app.ui
+package com.sssnaplab.snapqr.ui
 
-import com.snapqr.app.R
+import com.sssnaplab.snapqr.R
 import androidx.compose.ui.res.stringResource
 import android.text.format.DateUtils
 import androidx.compose.animation.core.Animatable
@@ -81,13 +81,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toBitmap
 import coil.compose.AsyncImage
-import com.snapqr.app.content.ActionLauncher
-import com.snapqr.app.content.ScanContent
-import com.snapqr.app.content.TargetApp
-import com.snapqr.app.content.TargetResolver
-import com.snapqr.app.preview.LinkPreview
-import com.snapqr.app.preview.PreviewState
-import com.snapqr.app.scan.ScanYellow
+import com.sssnaplab.snapqr.content.ActionLauncher
+import com.sssnaplab.snapqr.content.ScanContent
+import com.sssnaplab.snapqr.content.TargetApp
+import com.sssnaplab.snapqr.content.TargetResolver
+import com.sssnaplab.snapqr.preview.LinkPreview
+import com.sssnaplab.snapqr.preview.PreviewState
+import com.sssnaplab.snapqr.scan.ScanYellow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

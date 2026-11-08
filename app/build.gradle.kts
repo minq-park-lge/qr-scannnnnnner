@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.snapqr.app"
+    namespace = "com.sssnaplab.snapqr"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.snapqr.app"
+        applicationId = "com.sssnaplab.snapqr"
         minSdk = 26
         targetSdk = 35
         versionCode = 1

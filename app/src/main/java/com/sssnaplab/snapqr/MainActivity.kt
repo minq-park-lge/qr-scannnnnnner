@@ -1,12 +1,12 @@
-package com.snapqr.app
+package com.sssnaplab.snapqr
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.snapqr.app.ui.SnapQrApp
-import com.snapqr.app.ui.SnapQrTheme
+import com.sssnaplab.snapqr.ui.SnapQrApp
+import com.sssnaplab.snapqr.ui.SnapQrTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

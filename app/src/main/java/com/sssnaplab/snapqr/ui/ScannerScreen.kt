@@ -1,6 +1,6 @@
-package com.snapqr.app.ui
+package com.sssnaplab.snapqr.ui
 
-import com.snapqr.app.R
+import com.sssnaplab.snapqr.R
 import androidx.compose.ui.res.stringResource
 import android.os.Build
 import android.view.HapticFeedbackConstants
@@ -42,7 +42,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.launch
-import com.snapqr.app.scan.ImageScanner
+import com.sssnaplab.snapqr.scan.ImageScanner
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -52,12 +52,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.snapqr.app.content.ScanContent
-import com.snapqr.app.scan.QrOverlay
-import com.snapqr.app.scan.ScanEvent
-import com.snapqr.app.scan.ScanViewModel
-import com.snapqr.app.scan.ScanYellow
-import com.snapqr.app.scan.ScannerCamera
+import com.sssnaplab.snapqr.content.ScanContent
+import com.sssnaplab.snapqr.scan.QrOverlay
+import com.sssnaplab.snapqr.scan.ScanEvent
+import com.sssnaplab.snapqr.scan.ScanViewModel
+import com.sssnaplab.snapqr.scan.ScanYellow
+import com.sssnaplab.snapqr.scan.ScannerCamera
 
 @Composable
 fun ScannerScreen(vm: ScanViewModel = viewModel()) {

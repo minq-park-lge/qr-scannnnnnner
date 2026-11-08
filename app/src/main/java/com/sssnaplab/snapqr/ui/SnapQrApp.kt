@@ -1,6 +1,6 @@
-package com.snapqr.app.ui
+package com.sssnaplab.snapqr.ui
 
-import com.snapqr.app.R
+import com.sssnaplab.snapqr.R
 import androidx.compose.ui.res.stringResource
 import android.Manifest
 import android.content.Intent

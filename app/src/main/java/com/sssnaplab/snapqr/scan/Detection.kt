@@ -1,4 +1,4 @@
-package com.snapqr.app.scan
+package com.sssnaplab.snapqr.scan
 
 import androidx.compose.ui.geometry.Offset
 import com.google.mlkit.vision.barcode.common.Barcode

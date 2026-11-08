@@ -1,4 +1,4 @@
-package com.snapqr.app.scan
+package com.sssnaplab.snapqr.scan
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring

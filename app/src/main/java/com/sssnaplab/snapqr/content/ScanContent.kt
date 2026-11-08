@@ -1,4 +1,4 @@
-package com.snapqr.app.content
+package com.sssnaplab.snapqr.content
 
 import android.net.Uri
 
