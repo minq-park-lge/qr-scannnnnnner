@@ -6,6 +6,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.sssnaplab.snapqr.content.ContentParser
+import com.sssnaplab.snapqr.content.CustomTabsWarmer
 import com.sssnaplab.snapqr.content.ScanContent
 import com.sssnaplab.snapqr.preview.LinkPreviewer
 import com.sssnaplab.snapqr.preview.PreviewState
@@ -108,6 +109,10 @@ class ScanViewModel(app: Application) : AndroidViewModel(app) {
         }
         _state.update {
             it.copy(content = content, preview = previewUri?.let { PreviewState.Loading })
+        }
+        // 웹 링크면 브라우저에 미리 로딩 요청 → 열기 버튼 누르면 즉시 표시
+        if (content is ScanContent.Web && content.playStorePackage == null) {
+            CustomTabsWarmer.prefetch(content.uri)
         }
         previewJob?.cancel()
         if (previewUri != null) {

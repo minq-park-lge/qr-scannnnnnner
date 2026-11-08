@@ -82,7 +82,8 @@ object ActionLauncher {
 
         // 2) Custom Tab (빠르고 앱 안에서 자연스럽게 열림), 3) 일반 브라우저
         try {
-            CustomTabsIntent.Builder()
+            val session = CustomTabsWarmer.session
+            (if (session != null) CustomTabsIntent.Builder(session) else CustomTabsIntent.Builder())
                 .setShowTitle(true)
                 .setShareState(CustomTabsIntent.SHARE_STATE_ON)
                 .setDefaultColorSchemeParams(

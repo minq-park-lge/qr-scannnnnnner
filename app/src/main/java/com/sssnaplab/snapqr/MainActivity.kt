@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.sssnaplab.snapqr.content.CustomTabsWarmer
 import com.sssnaplab.snapqr.ui.SnapQrApp
 import com.sssnaplab.snapqr.ui.SnapQrTheme
 
@@ -20,5 +21,15 @@ class MainActivity : ComponentActivity() {
                 SnapQrApp()
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        CustomTabsWarmer.bind(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        CustomTabsWarmer.unbind(this)
     }
 }
