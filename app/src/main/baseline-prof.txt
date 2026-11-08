@@ -1,0 +1,10 @@
+# Baseline Profile: 앱 시작 → 카메라 → 인식 → 결과 카드 경로를 설치 시 AOT 컴파일.
+# (Compose / AndroidX 라이브러리는 자체 프로파일을 포함하므로 앱 + CameraX + ML Kit 만 지정)
+HSPLcom/sssnaplab/snapqr/**->**(**)**
+Lcom/sssnaplab/snapqr/**;
+HSPLandroidx/camera/**->**(**)**
+Landroidx/camera/**;
+HSPLcom/google/mlkit/**->**(**)**
+Lcom/google/mlkit/**;
+HSPLokhttp3/**->**(**)**
+Lokhttp3/**;

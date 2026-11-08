@@ -70,4 +70,6 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.androidx.browser)
     implementation(libs.kotlinx.coroutines.android)
+    // Baseline Profile 설치 (첫 실행부터 AOT 컴파일된 코드로 실행)
+    implementation(libs.androidx.profileinstaller)
 }

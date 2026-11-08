@@ -20,9 +20,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.google.mlkit.vision.barcode.BarcodeScannerOptions
-import com.google.mlkit.vision.barcode.BarcodeScanning
-import com.google.mlkit.vision.barcode.common.Barcode
 import java.util.concurrent.Executors
 
 /**
@@ -30,6 +27,7 @@ import java.util.concurrent.Executors
  *
  * 성능 포인트
  *  - CameraController 에서 IMAGE_ANALYSIS 만 활성화 (ImageCapture 미사용 → 센서 대역폭/해상도 여유)
+ *  - 앱 시작 시 예열된 공유 디텍터(QrEngine) 재사용 → 첫 프레임부터 즉시 인식
  *  - QR 포맷만 탐색하도록 제한 → ML Kit 프레임당 처리 시간 대폭 감소
  *  - 1080p 분석 해상도: 멀리 있거나 작은 QR 도 줌 없이 인식 (줌 강제 X)
  *  - KEEP_ONLY_LATEST 백프레셔: 지연 누적 없이 항상 최신 프레임만 처리
@@ -48,13 +46,7 @@ fun ScannerCamera(
     val currentOnFrame = rememberUpdatedState(onFrame)
     val currentOnTorch = rememberUpdatedState(onTorchAvailable)
 
-    val scanner = remember {
-        BarcodeScanning.getClient(
-            BarcodeScannerOptions.Builder()
-                .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
-                .build()
-        )
-    }
+    val scanner = QrEngine.scanner
     val analysisExecutor = remember { Executors.newSingleThreadExecutor() }
 
     val controller = remember {
@@ -107,7 +99,7 @@ fun ScannerCamera(
     DisposableEffect(Unit) {
         onDispose {
             controller.clearImageAnalysisAnalyzer()
-            scanner.close()
+            // scanner 는 프로세스 공유 인스턴스(QrEngine)이므로 닫지 않음
             analysisExecutor.shutdown()
         }
     }
