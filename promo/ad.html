@@ -1,0 +1,402 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>SnapQR Ad</title>
+<style>
+@font-face { font-family: Bebas; src: url(fonts/bebas-neue-latin-400-normal.woff2); }
+@font-face { font-family: Inter; font-weight: 400; src: url(fonts/inter-latin-400-normal.woff2); }
+@font-face { font-family: Inter; font-weight: 600; src: url(fonts/inter-latin-600-normal.woff2); }
+@font-face { font-family: Inter; font-weight: 700; src: url(fonts/inter-latin-700-normal.woff2); }
+@font-face { font-family: Inter; font-weight: 800; src: url(fonts/inter-latin-800-normal.woff2); }
+:root { --y: #FFD60A; --red: #FF453A; --amber: #FF9F0A; --green: #30D158; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1080px; height: 1920px; overflow: hidden; background: #000; }
+body { font-family: Inter, sans-serif; color: #fff; }
+#stage { position: absolute; inset: 0; overflow: hidden; background: #000; }
+.layer { position: absolute; inset: 0; opacity: 0; will-change: opacity, transform; }
+.center { display: flex; align-items: center; justify-content: center; flex-direction: column; }
+.cap {
+  position: absolute; left: 60px; right: 60px; text-align: center;
+  font-family: Bebas; font-size: 120px; line-height: .95; letter-spacing: .04em;
+  text-shadow: 0 0 40px rgba(255,255,255,.25);
+}
+.small-cap { font-family: Bebas; letter-spacing: .5em; font-size: 54px; color: #cfcfcf; }
+.vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(0,0,0,0) 45%, rgba(0,0,0,.85) 100%); pointer-events: none; }
+#grain { position: absolute; inset: -60px; background: url(img/grain.png); opacity: .07; mix-blend-mode: overlay; }
+#flash { position: absolute; inset: 0; background: #fff; opacity: 0; }
+
+/* QR field */
+.qrtile { position: absolute; image-rendering: pixelated; }
+
+/* phone */
+#phone {
+  position: absolute; left: 170px; top: 470px; width: 740px; height: 1400px;
+  border-radius: 92px; background: #111; padding: 22px;
+  box-shadow: 0 0 0 4px #2a2a2e, 0 40px 120px rgba(0,0,0,.8);
+}
+#screen { position: relative; width: 100%; height: 100%; border-radius: 72px; overflow: hidden;
+  background: radial-gradient(circle at 40% 35%, #3b4a44 0%, #1c2320 45%, #0b0e0d 100%); }
+#camqr { position: absolute; left: 190px; top: 380px; width: 320px; height: 320px; image-rendering: pixelated;
+  transform: rotate(-7deg) skewX(-3deg); border-radius: 8px; box-shadow: 0 20px 60px rgba(0,0,0,.6); filter: brightness(.92) contrast(.95); }
+#brk { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+.topbtn { position: absolute; top: 60px; width: 84px; height: 84px; border-radius: 42px; background: rgba(0,0,0,.45); }
+#ring { position: absolute; border: 6px solid var(--y); border-radius: 50%; }
+
+/* result card */
+#card { position: absolute; left: 18px; right: 18px; bottom: 18px; border-radius: 56px; background: rgba(28,28,30,.97);
+  padding: 34px 36px 36px; box-shadow: 0 -10px 60px rgba(0,0,0,.6); }
+.handle { width: 80px; height: 9px; border-radius: 5px; background: rgba(255,255,255,.25); margin: 0 auto 22px; }
+.hdr { display: flex; align-items: center; gap: 20px; font-size: 38px; font-weight: 600; margin-bottom: 24px; }
+.dot { width: 64px; height: 64px; border-radius: 32px; background: var(--y); display: flex; align-items: center; justify-content: center; }
+.dot svg { width: 36px; height: 36px; }
+.pv { border-radius: 36px; background: #2C2C2E; overflow: hidden; }
+.pvimg { height: 250px; background: linear-gradient(135deg, #0b3d91, #6a0dad 55%, #ff5e62); position: relative; }
+.pvimg b { position: absolute; left: 34px; bottom: 26px; font-family: Bebas; font-size: 84px; letter-spacing: .03em; }
+.pvb { padding: 26px 28px; }
+.host { font-size: 28px; color: #AEAEB2; display: flex; align-items: center; gap: 12px; }
+.ttl { font-size: 36px; font-weight: 700; margin-top: 10px; }
+.redir { font-size: 26px; color: var(--amber); margin-top: 12px; }
+.safe { font-size: 28px; color: var(--green); margin-top: 22px; display: flex; gap: 12px; align-items: center; }
+.btn { margin-top: 26px; height: 104px; border-radius: 32px; background: var(--y); color: #000; font-size: 36px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; gap: 14px; }
+.btn.red { background: var(--red); color: #fff; }
+.danger { border-radius: 30px; background: rgba(255,69,58,.18); padding: 26px; }
+.danger h3 { color: var(--red); font-size: 34px; display: flex; gap: 14px; align-items: center; }
+.danger p { font-size: 27px; margin-top: 12px; color: #eee; line-height: 1.35; }
+.mono { font-family: monospace; font-size: 25px; color: #AEAEB2; margin-top: 16px; }
+
+/* fake login */
+#login { position: absolute; left: 150px; top: 640px; width: 780px; border-radius: 40px; background: #f2f2f2; color: #222; padding: 50px; }
+#login .bar { font-family: monospace; font-size: 28px; color: #444; background: #ddd; border-radius: 18px; padding: 16px 22px; margin-bottom: 40px; }
+#login h2 { font-size: 52px; margin-bottom: 30px; }
+#login .f { height: 96px; border-radius: 18px; border: 3px solid #bbb; margin-bottom: 24px; font-size: 40px; padding: 22px; color: #555; }
+#login .b { height: 100px; border-radius: 18px; background: #1a5fd0; color: #fff; font-size: 40px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+
+.word { position: absolute; left: 0; right: 0; text-align: center; font-family: Bebas; font-size: 230px; letter-spacing: .02em; }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- A: QR world -->
+  <div class="layer" id="A"><div id="qrfield"></div><div class="vignette"></div></div>
+
+  <!-- B: one scan -> anywhere -->
+  <div class="layer" id="B">
+    <svg id="rays" width="1080" height="1920" style="position:absolute;inset:0"></svg>
+    <img id="bqr" src="img/qr_main.png" style="position:absolute;left:390px;top:810px;width:300px;height:300px;image-rendering:pixelated;border-radius:14px;box-shadow:0 0 80px rgba(255,214,10,.35)">
+    <div id="scanline" style="position:absolute;left:380px;width:320px;height:6px;background:var(--y);box-shadow:0 0 30px var(--y)"></div>
+    <div class="vignette"></div>
+  </div>
+
+  <!-- C: phishing -->
+  <div class="layer" id="C">
+    <div id="cbg" style="position:absolute;inset:0;background:radial-gradient(circle at 50% 50%, #3a0505, #000 75%)"></div>
+    <div id="loginwrap"></div>
+    <div class="vignette"></div>
+  </div>
+
+  <!-- D/E: title cards -->
+  <div class="layer center" id="D"><div id="dtext" class="cap" style="position:static;font-size:190px">THIS WINTER</div>
+    <div id="flare" style="position:absolute;left:0;right:0;top:958px;height:4px;background:linear-gradient(90deg,transparent,#fff,transparent)"></div></div>
+  <div class="layer center" id="E"><div class="small-cap">SNAP&nbsp;LAB</div><div style="height:24px"></div><div class="small-cap" style="font-size:40px;color:#888">PRESENTS</div></div>
+
+  <!-- F: logo -->
+  <div class="layer" id="F">
+    <img src="img/qr_main.png" id="flogo" style="position:absolute;left:390px;top:640px;width:300px;height:300px;image-rendering:pixelated;border-radius:18px">
+    <svg id="fbrk" width="1080" height="1920" style="position:absolute;inset:0"></svg>
+    <div id="ftitle" style="position:absolute;left:0;right:0;top:1080px;text-align:center;font-weight:800;font-size:170px;letter-spacing:-.03em">Snap<span style="color:var(--y)">QR</span></div>
+  </div>
+
+  <!-- G-J: phone -->
+  <div class="layer" id="P">
+    <div id="pbg" style="position:absolute;inset:0;background:radial-gradient(circle at 50% 60%, #1d1d1f, #000 70%)"></div>
+    <div id="phone"><div id="screen">
+      <img id="camqr" src="img/qr_main.png">
+      <svg id="brk" viewBox="0 0 696 1356"></svg>
+      <div id="ring"></div>
+      <div class="topbtn" style="right:150px"></div><div class="topbtn" style="right:50px"></div>
+      <div id="card"></div>
+    </div></div>
+    <div id="pcap" class="cap" style="top:150px;font-size:118px"></div>
+  </div>
+
+  <!-- K: no ads -->
+  <div class="layer" id="K">
+    <div class="word" id="k1" style="top:560px">NO ADS.</div>
+    <div class="word" id="k2" style="top:820px">NO TRACKING.</div>
+    <div class="word" id="k3" style="top:1080px;color:var(--y)">NO WAITING.</div>
+  </div>
+
+  <!-- L: end card -->
+  <div class="layer" id="L">
+    <img src="img/qr_main.png" id="llogo" style="position:absolute;left:420px;top:520px;width:240px;height:240px;image-rendering:pixelated;border-radius:14px">
+    <svg id="lbrk" width="1080" height="1920" style="position:absolute;inset:0"></svg>
+    <div style="position:absolute;left:0;right:0;top:860px;text-align:center;font-weight:800;font-size:160px;letter-spacing:-.03em">Snap<span style="color:var(--y)">QR</span></div>
+    <div id="ltag" style="position:absolute;left:0;right:0;top:1060px;text-align:center;font-family:Bebas;font-size:110px;letter-spacing:.08em;color:var(--y)">SCAN SMARTER.</div>
+    <div id="lby" style="position:absolute;left:0;right:0;top:1210px;text-align:center" class="small-cap">BY&nbsp;SNAP&nbsp;LAB</div>
+    <div id="lsoon" style="position:absolute;left:0;right:0;top:1560px;text-align:center;font-size:44px;font-weight:600;color:#ddd">Coming soon on Google Play</div>
+    <div id="lfeat" style="position:absolute;left:0;right:0;top:1640px;text-align:center;font-size:30px;color:#888">Instant lock · Link preview · Phishing shield · No ads</div>
+  </div>
+
+  <!-- subtitles for A-C -->
+  <div id="sub" class="cap" style="top:1480px;font-size:104px;opacity:0"></div>
+
+  <div id="grain"></div>
+  <div id="flash"></div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const S = (t, a, b) => clamp((t - a) / (b - a));
+const eo = x => 1 - Math.pow(1 - x, 3);
+const eio = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const back = x => { const c1 = 2.2, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+const vis = (t, a, b, fi = .3, fo = .3) => Math.min(S(t, a, a + fi), 1 - S(t, b - fo, b));
+function rnd(seed) { let s = seed * 9301 + 49297; return () => ((s = (s * 9301 + 49297) % 233280) / 233280); }
+
+// ---------- timeline (seconds) — must match mix.py ----------
+const T = window.TIMELINE;
+
+// ---------- A: QR field ----------
+const field = $('qrfield'); const tiles = [];
+{ const r = rnd(7);
+  for (let i = 0; i < 34; i++) {
+    const im = document.createElement('img'); im.src = `img/qr_${i % 8}.png`; im.className = 'qrtile';
+    const z = .25 + r() * 1.1; const size = 90 + z * 170;
+    tiles.push({ im, x: r() * 1180 - 50, y: r() * 2020 - 50, z, size, rot: (r() - .5) * 30, ph: r() * 6 });
+    field.appendChild(im);
+  } }
+
+// ---------- B: rays ----------
+const rays = $('rays'); const rayData = [];
+{ const r = rnd(3); const labels = ['pay', 'login', 'shop', 'track', 'gift', 'verify', 'wifi', 'menu', 'event', 'app'];
+  for (let i = 0; i < 10; i++) {
+    const ang = (i / 10) * Math.PI * 2 + r() * .3; const len = 700 + r() * 380;
+    rayData.push({ ang, len, label: labels[i], d: r() * .5 });
+  }
+  rays.innerHTML = rayData.map((d, i) => `<line id="ray${i}" x1="540" y1="960" x2="540" y2="960" stroke="#FFD60A" stroke-width="4" stroke-linecap="round" opacity=".8"/>
+    <g id="chip${i}"><rect x="-120" y="-36" width="240" height="72" rx="36" fill="#1c1c1e" stroke="#FFD60A" stroke-width="3"/>
+    <text x="0" y="12" fill="#fff" font-family="Inter" font-weight="600" font-size="32" text-anchor="middle">${d.label}.xyz/…</text></g>`).join('');
+}
+
+// ---------- C: login (with RGB split copies) ----------
+const loginHTML = `<div class="bar">secure-bank-login.example</div><h2>Sign in</h2>
+  <div class="f">user@mail.com</div><div class="f" id="pw">Password</div><div class="b">Log in</div>`;
+$('loginwrap').innerHTML = ['m', 'r', 'c', 's'].map(k => `<div id="login_${k}" style="position:absolute;inset:0"><div id="login" class="lg">${loginHTML}</div></div>`).join('');
+
+// ---------- brackets ----------
+function bracketPath(x0, y0, x1, y1, len) {
+  return `M${x0},${y0 + len} L${x0},${y0} L${x0 + len},${y0} M${x1 - len},${y0} L${x1},${y0} L${x1},${y0 + len}
+          M${x1},${y1 - len} L${x1},${y1} L${x1 - len},${y1} M${x0 + len},${y1} L${x0},${y1} L${x0},${y1 - len}`;
+}
+function bracketsSVG(cx, cy, half, len, sw, alpha = 1, fill = 0) {
+  const x0 = cx - half, y0 = cy - half, x1 = cx + half, y1 = cy + half;
+  return `<rect x="${x0}" y="${y0}" width="${half * 2}" height="${half * 2}" rx="18" fill="#FFD60A" opacity="${fill}"/>
+    <path d="${bracketPath(x0, y0, x1, y1, len)}" stroke="#FFD60A" stroke-width="${sw}" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="${alpha}"/>`;
+}
+
+// ---------- icons ----------
+const IC = {
+  web: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="#000" stroke-width="2"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18" fill="none" stroke="#000" stroke-width="2"/></svg>',
+  wifi: '<svg viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="19" r="1.6"/></svg>',
+  play: '<svg viewBox="0 0 24 24"><path d="M6 3l14 9-14 9z"/></svg>',
+  person: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z"/></svg>',
+  cal: '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="#000" stroke-width="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke="#000" stroke-width="2"/></svg>',
+  pin: '<svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>',
+  shield: '<svg viewBox="0 0 24 24" width="40" height="40"><path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z" fill="#FF453A"/><path d="M12 7v6M12 16v1" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>',
+  check: '<svg viewBox="0 0 24 24" width="34" height="34"><path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z" fill="none" stroke="#30D158" stroke-width="2"/><path d="M8 12l3 3 5-6" fill="none" stroke="#30D158" stroke-width="2.2"/></svg>',
+  lock: '<svg viewBox="0 0 24 24" width="26" height="26"><rect x="5" y="10" width="14" height="11" rx="2" fill="#AEAEB2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="#AEAEB2" stroke-width="2"/></svg>',
+};
+const cardWeb = `<div class="handle"></div><div class="hdr"><div class="dot">${IC.web}</div>Website</div>
+  <div class="pv"><div class="pvimg"><b>WINTER SALE</b></div><div class="pvb">
+    <div class="host">${IC.lock} realshop.example</div><div class="ttl">Winter Sale — Up to 50% Off</div>
+    <div class="redir">⚠ bit.ly → realshop.example</div></div></div>
+  <div class="safe">${IC.check} No known risk signs</div>
+  <div class="btn">Open</div>`;
+const cardDanger = `<div class="handle"></div><div class="hdr"><div class="dot">${IC.web}</div>Website</div>
+  <div class="danger"><h3>${IC.shield} Possibly a phishing link</h3>
+    <p>• Disguised address: “my-bank.com” before @ is not the real site</p>
+    <p>• Spelled like a bank, but slightly different</p></div>
+  <div class="mono">https://my-bank.com@verify-login.example/</div>
+  <div class="btn red">Open anyway</div>`;
+const types = [
+  ['wifi', 'Wi-Fi', 'Join Wi-Fi', 'Network&nbsp;&nbsp;Cafe_Guest'],
+  ['play', 'Google Play app', 'View in Play Store', 'Opens in Play Store'],
+  ['person', 'Contact', 'Add to contacts', 'Name&nbsp;&nbsp;Alex Kim'],
+  ['cal', 'Event', 'Add to calendar', 'When&nbsp;&nbsp;Fri, Dec 12 · 7:00 PM'],
+  ['pin', 'Location', 'Show on map', 'Coordinates&nbsp;&nbsp;37.5665, 126.9780'],
+];
+const cardType = i => { const [ic, label, btn, row] = types[i];
+  return `<div class="handle"></div><div class="hdr"><div class="dot">${IC[ic]}</div>${label}</div>
+    <div class="pv" style="padding:30px 28px;font-size:32px;color:#ddd">${row}</div>
+    <div class="btn">${btn}</div>`; };
+
+let lastCard = '';
+function setCard(html) { if (html !== lastCard) { $('card').innerHTML = html; lastCard = html; } }
+let lastCap = '';
+function setText(el, txt) { if (el._t !== txt) { el.innerHTML = txt; el._t = txt; } }
+
+// ---------- render ----------
+window.render = function (t) {
+  // A: 0 .. B
+  const aOn = vis(t, 0, T.anywhere - .2, .8, .5);
+  $('A').style.opacity = aOn;
+  if (aOn > 0) {
+    const push = 1 + t * .045;
+    tiles.forEach(o => {
+      const x = 540 + (o.x - 540) * push * (0.8 + o.z * .3) + Math.sin(t * .4 + o.ph) * 12 * o.z;
+      const y = 960 + (o.y - 960) * push * (0.8 + o.z * .3) - t * 18 * o.z;
+      const flick = .5 + .5 * Math.sin(t * 2.3 + o.ph * 3);
+      o.im.style.cssText = `left:${x - o.size / 2}px;top:${y - o.size / 2}px;width:${o.size}px;height:${o.size}px;
+        transform:rotate(${o.rot}deg);opacity:${(.06 + o.z * .22) * (.6 + .4 * flick)};filter:blur(${Math.max(0, (1.1 - o.z) * 3)}px)`;
+    });
+  }
+
+  // B
+  const bOn = vis(t, T.anywhere - .3, T.never - .1, .35, .2);
+  $('B').style.opacity = bOn;
+  if (bOn > 0) {
+    const lt = t - T.anywhere;
+    $('scanline').style.top = (810 + ((lt * 1.6) % 1) * 300) + 'px';
+    $('scanline').style.opacity = lt < .9 ? 1 : 0;
+    rayData.forEach((d, i) => {
+      const p = eo(S(lt, .9 + d.d * .6, 1.9 + d.d * .6));
+      const ex = 540 + Math.cos(d.ang) * d.len * p, ey = 960 + Math.sin(d.ang) * d.len * p;
+      const l = $('ray' + i); l.setAttribute('x2', ex); l.setAttribute('y2', ey);
+      const c = $('chip' + i); c.setAttribute('transform', `translate(${ex},${ey}) scale(${.6 + .4 * p})`); c.setAttribute('opacity', p);
+    });
+    $('bqr').style.transform = `scale(${1 + .03 * Math.sin(lt * 6)})`;
+  }
+
+  // C: glitchy phishing page
+  const cOn = vis(t, T.never - .25, T.winter - .45, .15, .1);
+  $('C').style.opacity = cOn;
+  if (cOn > 0) {
+    const lt = t - T.never; const fr = Math.floor(t * 30); const r = rnd(fr + 11);
+    const typed = '•'.repeat(clamp(Math.floor((lt - .4) * 7), 0, 9));
+    document.querySelectorAll('#pw').forEach(e => setText(e, typed || 'Password'));
+    const g = r() < .35 ? (r() - .5) * 40 : 0;
+    const scale = 1 + lt * .03;
+    $('login_r').style.cssText = `position:absolute;inset:0;transform:translate(${g + 8}px,0) scale(${scale});mix-blend-mode:screen;filter:sepia(1) saturate(8) hue-rotate(-50deg);opacity:.35`;
+    $('login_c').style.cssText = `position:absolute;inset:0;transform:translate(${-g - 8}px,0) scale(${scale});mix-blend-mode:screen;filter:sepia(1) saturate(8) hue-rotate(140deg);opacity:.3`;
+    $('login_m').style.cssText = `position:absolute;inset:0;transform:translate(${g * .3}px,0) scale(${scale})`;
+    const sy = 640 + r() * 700, sh = 30 + r() * 90;
+    $('login_s').style.cssText = `position:absolute;inset:0;transform:translate(${(r() - .5) * 140}px,0) scale(${scale});clip-path:inset(${sy}px 0 ${1920 - sy - sh}px 0);opacity:${r() < .55 ? 1 : 0};filter:invert(${r() < .3 ? 1 : 0})`;
+    $('cbg').style.opacity = .7 + .3 * Math.sin(lt * 9);
+  }
+
+  // subtitles (A–C)
+  const subs = [[T.world, T.world + 1.5, 'IN A WORLD…'], [T.surface, T.anywhere - .35, 'WHERE EVERY SURFACE<br>HIDES A CODE'],
+                [T.anywhere, T.never - .2, 'ONE SCAN CAN TAKE<br>YOU ANYWHERE'], [T.never, T.winter - .5, 'EVEN WHERE YOU<br>NEVER MEANT TO GO']];
+  let so = 0;
+  for (const [a, b, txt] of subs) { const v = vis(t, a, b, .25, .2); if (v > 0) { so = v; setText($('sub'), txt); } }
+  $('sub').style.opacity = so;
+  $('sub').style.color = t > T.never - .2 && t < T.winter ? '#ff6b61' : '#fff';
+
+  // D: THIS WINTER
+  const dOn = vis(t, T.winter - .1, T.presents - .25, .5, .35);
+  $('D').style.opacity = dOn;
+  if (dOn > 0) { const lt = t - T.winter; $('dtext').style.transform = `scale(${1 + lt * .04})`;
+    $('flare').style.opacity = Math.max(0, 1 - lt * .9); $('flare').style.transform = `scaleX(${.3 + lt})`; }
+
+  // E: presents
+  const eOn = vis(t, T.presents - .1, T.title - .15, .4, .25);
+  $('E').style.opacity = eOn;
+  $('E').style.transform = `scale(${1 + (t - T.presents) * .03})`;
+
+  // F: logo
+  const fOn = vis(t, T.title - .25, T.lock - .25, .1, .3);
+  $('F').style.opacity = fOn;
+  if (fOn > 0) {
+    const p = back(S(t, T.title - .25, T.title + .05));
+    const half = 150 + 26 + (1 - p) * 420;
+    $('fbrk').innerHTML = bracketsSVG(540, 790, half, 70, 16, clamp(p * 2));
+    $('flogo').style.opacity = S(t, T.title - .3, T.title - .05);
+    const tp = eo(S(t, T.title + .1, T.title + .6));
+    $('ftitle').style.opacity = tp; $('ftitle').style.transform = `translateY(${(1 - tp) * 60}px)`;
+  }
+
+  // P: phone scenes (lock → preview → fakes → right app)
+  const pOn = vis(t, T.lock - .3, T.noads - .3, .3, .25);
+  $('P').style.opacity = pOn;
+  if (pOn > 0) {
+    const enter = eo(S(t, T.lock - .3, T.lock + .3));
+    $('phone').style.transform = `translateY(${(1 - enter) * 300}px) scale(${.92 + .08 * enter})`;
+    // brackets: tracking → lock
+    const lockAt = T.lock + .45;
+    const lp = back(S(t, lockAt - .25, lockAt + .05));
+    const cx = 350, cy = 540; const half = 190 + (1 - lp) * 120 + Math.sin(t * 9) * (t < lockAt ? 8 : 0);
+    const brAlpha = S(t, T.lock - .1, T.lock + .15);
+    $('brk').innerHTML = bracketsSVG(cx, cy, half, 64, 14, brAlpha, t > lockAt ? .14 : .06);
+    $('brk').style.transform = 'rotate(-7deg)'; $('brk').style.transformOrigin = '350px 540px';
+    // haptic ring
+    const rp = S(t, lockAt, lockAt + .6);
+    const rs = 260 + rp * 300;
+    $('ring').style.cssText = `left:${cx - rs / 2}px;top:${cy - rs / 2}px;width:${rs}px;height:${rs}px;opacity:${t > lockAt ? (1 - rp) * .8 : 0}`;
+    // card
+    let cardY = 1; let html = cardWeb;
+    if (t >= T.preview - .3) cardY = 1 - eo(S(t, T.preview - .3, T.preview + .15));
+    if (t >= T.fakes - .2) html = cardDanger;
+    if (t >= T.rightapp - .2) { const i = clamp(Math.floor((t - (T.rightapp - .2)) / .6), 0, types.length - 1); html = cardType(i); }
+    setCard(html);
+    const swap = (k) => { const d = Math.abs(t - k); return d < .12 ? (1 - d / .12) * 30 : 0; };
+    let bump = swap(T.fakes - .2);
+    for (let i = 1; i < types.length; i++) bump += swap(T.rightapp - .2 + i * .6);
+    $('card').style.transform = `translateY(${cardY * 1100 + bump}px)`;
+    // danger tint
+    const dk = vis(t, T.fakes - .2, T.rightapp - .2, .15, .15);
+    $('pbg').style.background = `radial-gradient(circle at 50% 60%, rgba(${29 + dk * 90},${29 - dk * 10},${31 - dk * 10},1), #000 70%)`;
+    $('phone').style.boxShadow = `0 0 0 4px #2a2a2e, 0 40px 120px rgba(0,0,0,.8), 0 0 ${dk * 140}px rgba(255,69,58,${dk * .7})`;
+    // captions
+    const caps = [[T.lock - .1, T.preview - .3, 'LOCKS ON.<br>INSTANTLY.', '#fff'],
+                  [T.preview - .3, T.fakes - .25, 'SEE WHERE IT<br>REALLY GOES', '#fff'],
+                  [T.fakes - .25, T.rightapp - .25, 'CATCHES THE FAKES.<br><span style="font-size:70px;letter-spacing:.12em;color:#FF453A">ON YOUR PHONE</span>', '#fff'],
+                  [T.rightapp - .25, T.noads - .3, 'THE RIGHT APP.<br>EVERY TIME.', '#FFD60A']];
+    let co = 0;
+    for (const [a, b, txt, col] of caps) { const v = vis(t, a, b, .2, .15); if (v > 0) { co = v; setText($('pcap'), txt); $('pcap').style.color = col; } }
+    $('pcap').style.opacity = co;
+  }
+
+  // K: no ads / tracking / waiting
+  const kOn = vis(t, T.noads - .25, T.tagline - .3, .15, .3);
+  $('K').style.opacity = kOn;
+  if (kOn > 0) {
+    const hits = [T.noads + .02, T.noads + .78, T.noads + 1.62];
+    ['k1', 'k2', 'k3'].forEach((id, i) => {
+      const p = S(t, hits[i] - .05, hits[i] + .18);
+      const sc = 1.8 - .8 * back(p);
+      const shake = (t > hits[i] && t < hits[i] + .2) ? Math.sin(t * 120) * 10 * (1 - (t - hits[i]) / .2) : 0;
+      $(id).style.opacity = p > 0 ? 1 : 0; $(id).style.transform = `translateX(${shake}px) scale(${sc})`;
+    });
+  }
+
+  // L: end card
+  const lOn = vis(t, T.tagline - .3, 999, .3, .1);
+  $('L').style.opacity = lOn;
+  if (lOn > 0) {
+    const p = back(S(t, T.tagline - .3, T.tagline));
+    $('lbrk').innerHTML = bracketsSVG(540, 640, 120 + 22 + (1 - p) * 300, 56, 13, clamp(p * 2));
+    const tg = eo(S(t, T.tagline + .9, T.tagline + 1.4));
+    $('ltag').style.opacity = tg; $('ltag').style.transform = `scale(${1.15 - .15 * tg})`;
+    $('lby').style.opacity = S(t, T.tagline + 1.3, T.tagline + 1.8);
+    $('lsoon').style.opacity = S(t, T.soon - .1, T.soon + .4);
+    $('lfeat').style.opacity = S(t, T.soon + .5, T.soon + 1.0);
+  }
+
+  // flashes on big hits
+  const fl = Math.max(
+    1 - S(t, T.title - .05, T.title + .25),   // logo slam
+    .6 * (1 - S(t, T.winter - .45, T.winter - .2)) * (t > T.winter - .45 ? 1 : 0),
+    .5 * (1 - S(t, T.tagline - .05, T.tagline + .2)) * (t > T.tagline - .05 ? 1 : 0));
+  $('flash').style.opacity = (t > T.title - .05 && t < T.title + .25) ? fl : (t > T.winter - .45 && t < T.winter - .2) || (t > T.tagline - .05 && t < T.tagline + .2) ? fl : 0;
+
+  // grain
+  const r = rnd(Math.floor(t * 24) + 3);
+  $('grain').style.transform = `translate(${(r() - .5) * 60}px,${(r() - .5) * 60}px)`;
+};
+</script>
+</body>
+</html>
