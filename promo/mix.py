@@ -1,7 +1,8 @@
 import json, sys, numpy as np, soundfile as sf
 from scipy import signal
-P = sys.argv[1]
-T = json.load(open(f"{P}/timeline.json")); END = T["end"]
+P, VO = sys.argv[1], sys.argv[2]   # promo dir, vo dir (timeline.json 포함)
+OUT = sys.argv[3]
+T = json.load(open(f"{VO}/timeline.json")); END = T["end"]
 SR = 48000; N = int(END * SR) + SR
 rng = np.random.default_rng(42)
 music = np.zeros((N, 2)); fx = np.zeros((N, 2))
@@ -90,8 +91,9 @@ def pulse_bed(t0, t1, bpm=120, amp=.5):
 
 # ---- score ----
 drone(0.0, T["winter"] - .4, 55, .22)
-for k in range(8):  # heartbeat in B/C
-    hit(T["anywhere"] + .2 + k * .78, .35)
+k = 0
+while T["anywhere"] + .1 + k * .62 < T["winter"] - .6:  # heartbeat in B/C
+    hit(T["anywhere"] + .1 + k * .62, .35); k += 1
 glitch(T["never"] - .2, T["winter"] - .5, .22)
 braam(T["winter"] - .45, 3.0, .9, 55)
 drone(T["winter"], T["title"] - .2, 41.2, .18)
@@ -100,12 +102,12 @@ braam(T["title"] - .27, 3.6, 1.0, 49)
 hit(T["title"] - .27, 1.0)
 whoosh(T["lock"] - .45, .8, .35)
 blip(T["lock"] + .45, 1900, .4)
-pulse_bed(T["lock"] + .45, T["noads"] - .35, 120, .42)
+pulse_bed(T["lock"] + .45, T["noads1"] - .3, 128, .42)
 whoosh(T["preview"] - .45, .8, .3)
 whoosh(T["fakes"] - .45, .8, .3, up=False)
 glitch(T["fakes"] - .2, T["fakes"] + .3, .2)
-for i in range(5): blip(T["rightapp"] - .2 + i * .6, 1300 + 120 * i, .22)
-for i, d in enumerate([.02, .78, 1.62]): hit(T["noads"] + d - .02, .85 + .1 * i)
+for i in range(5): blip(T["rightapp"] - .2 + i * .42, 1300 + 120 * i, .22)
+for i, key in enumerate(["noads1", "noads2", "noads3"]): hit(T[key] - .02, .85 + .1 * i)
 braam(T["tagline"] - .3, 4.2, .85, 55); hit(T["tagline"] - .3, 1.0)
 drone(T["tagline"], END + .5, 55, .16)
 
@@ -117,9 +119,8 @@ bus = bus + wet * .22
 
 # ---- VO + ducking ----
 vo = np.zeros(N)
-meta = {m["key"]: m for m in json.load(open(f"{P}/vo/vo.json"))}
-for key in meta:
-    x, sr = sf.read(f"{P}/vo/{key}.wav"); assert sr == SR
+for key in [k for k in T if k != "end"]:
+    x, sr = sf.read(f"{VO}/{key}.wav"); assert sr == SR
     i = int(T[key] * SR); j = min(N, i + len(x)); vo[i:j] += x[: j - i]
 venv = np.convolve(np.abs(vo), np.ones(2400) / 2400, "same")
 venv = np.minimum(1, venv / (np.percentile(venv[venv > 1e-4], 90) + 1e-9))
@@ -132,5 +133,5 @@ mix = bus * .55 + np.stack([vo, vo], 1) * .9
 mix = mix[: int((END + .3) * SR)]
 fade = int(.6 * SR); mix[-fade:] *= np.linspace(1, 0, fade)[:, None]
 mix = np.tanh(mix * 1.2) / np.tanh(1.2)
-sf.write(f"{P}/mix.wav", mix.astype(np.float32), SR)
+sf.write(OUT, mix.astype(np.float32), SR)
 print("mix", round(len(mix) / SR, 2), "s")

@@ -3,6 +3,12 @@
 <head>
 <meta charset="utf-8">
 <title>SnapQR Ad</title>
+<link rel="stylesheet" href="fonts/black-han-sans/korean-400.css">
+<link rel="stylesheet" href="fonts/black-han-sans/latin-400.css">
+<link rel="stylesheet" href="fonts/noto-sans-kr/korean-400.css">
+<link rel="stylesheet" href="fonts/noto-sans-kr/korean-600.css">
+<link rel="stylesheet" href="fonts/noto-sans-kr/korean-700.css">
+<link rel="stylesheet" href="fonts/noto-sans-kr/korean-800.css">
 <style>
 @font-face { font-family: Bebas; src: url(fonts/bebas-neue-latin-400-normal.woff2); }
 @font-face { font-family: Inter; font-weight: 400; src: url(fonts/inter-latin-400-normal.woff2); }
@@ -12,7 +18,13 @@
 :root { --y: #FFD60A; --red: #FF453A; --amber: #FF9F0A; --green: #30D158; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { width: 1080px; height: 1920px; overflow: hidden; background: #000; }
-body { font-family: Inter, sans-serif; color: #fff; }
+body { font-family: Inter, 'Noto Sans KR', sans-serif; color: #fff; }
+body.ko .cap, body.ko .word, body.ko #ltag, body.ko #dtext { font-family: 'Black Han Sans'; letter-spacing: 0; line-height: 1.12; }
+body.ko .cap { font-size: 104px !important; }
+body.ko .word { font-size: 190px; }
+body.ko #sub { font-size: 96px !important; }
+body.ko #dtext { font-size: 170px !important; }
+body.ko #ltag { font-family: 'Black Han Sans' !important; letter-spacing: 0 !important; font-size: 100px !important; }
 #stage { position: absolute; inset: 0; overflow: hidden; background: #000; }
 .layer { position: absolute; inset: 0; opacity: 0; will-change: opacity, transform; }
 .center { display: flex; align-items: center; justify-content: center; flex-direction: column; }
@@ -98,9 +110,9 @@ body { font-family: Inter, sans-serif; color: #fff; }
   </div>
 
   <!-- D/E: title cards -->
-  <div class="layer center" id="D"><div id="dtext" class="cap" style="position:static;font-size:190px">THIS WINTER</div>
+  <div class="layer center" id="D"><div id="dtext" class="cap" style="position:static;font-size:190px"></div>
     <div id="flare" style="position:absolute;left:0;right:0;top:958px;height:4px;background:linear-gradient(90deg,transparent,#fff,transparent)"></div></div>
-  <div class="layer center" id="E"><div class="small-cap">SNAP&nbsp;LAB</div><div style="height:24px"></div><div class="small-cap" style="font-size:40px;color:#888">PRESENTS</div></div>
+  <div class="layer center" id="E"><div class="small-cap">SNAP&nbsp;LAB</div><div style="height:24px"></div><div class="small-cap" id="epres" style="font-size:40px;color:#888"></div></div>
 
   <!-- F: logo -->
   <div class="layer" id="F">
@@ -124,9 +136,9 @@ body { font-family: Inter, sans-serif; color: #fff; }
 
   <!-- K: no ads -->
   <div class="layer" id="K">
-    <div class="word" id="k1" style="top:560px">NO ADS.</div>
-    <div class="word" id="k2" style="top:820px">NO TRACKING.</div>
-    <div class="word" id="k3" style="top:1080px;color:var(--y)">NO WAITING.</div>
+    <div class="word" id="k1" style="top:560px"></div>
+    <div class="word" id="k2" style="top:820px"></div>
+    <div class="word" id="k3" style="top:1080px;color:var(--y)"></div>
   </div>
 
   <!-- L: end card -->
@@ -134,10 +146,10 @@ body { font-family: Inter, sans-serif; color: #fff; }
     <img src="img/qr_main.png" id="llogo" style="position:absolute;left:420px;top:520px;width:240px;height:240px;image-rendering:pixelated;border-radius:14px">
     <svg id="lbrk" width="1080" height="1920" style="position:absolute;inset:0"></svg>
     <div style="position:absolute;left:0;right:0;top:860px;text-align:center;font-weight:800;font-size:160px;letter-spacing:-.03em">Snap<span style="color:var(--y)">QR</span></div>
-    <div id="ltag" style="position:absolute;left:0;right:0;top:1060px;text-align:center;font-family:Bebas;font-size:110px;letter-spacing:.08em;color:var(--y)">SCAN SMARTER.</div>
+    <div id="ltag" style="position:absolute;left:0;right:0;top:1060px;text-align:center;font-family:Bebas;font-size:110px;letter-spacing:.08em;color:var(--y)"></div>
     <div id="lby" style="position:absolute;left:0;right:0;top:1210px;text-align:center" class="small-cap">BY&nbsp;SNAP&nbsp;LAB</div>
-    <div id="lsoon" style="position:absolute;left:0;right:0;top:1560px;text-align:center;font-size:44px;font-weight:600;color:#ddd">Coming soon on Google Play</div>
-    <div id="lfeat" style="position:absolute;left:0;right:0;top:1640px;text-align:center;font-size:30px;color:#888">Instant lock · Link preview · Phishing shield · No ads</div>
+    <div id="lsoon" style="position:absolute;left:0;right:0;top:1560px;text-align:center;font-size:44px;font-weight:600;color:#ddd"></div>
+    <div id="lfeat" style="position:absolute;left:0;right:0;top:1640px;text-align:center;font-size:30px;color:#888"></div>
   </div>
 
   <!-- subtitles for A-C -->
@@ -159,6 +171,11 @@ function rnd(seed) { let s = seed * 9301 + 49297; return () => ((s = (s * 9301 +
 
 // ---------- timeline (seconds) — must match mix.py ----------
 const T = window.TIMELINE;
+const C = window.COPY;
+document.body.className = C.lang;
+$('dtext').innerHTML = C.winter; $('epres').innerHTML = C.presents;
+$('k1').innerHTML = C.no[0]; $('k2').innerHTML = C.no[1]; $('k3').innerHTML = C.no[2];
+$('ltag').innerHTML = C.tagline; $('lsoon').innerHTML = C.soon; $('lfeat').innerHTML = C.feat;
 
 // ---------- A: QR field ----------
 const field = $('qrfield'); const tiles = [];
@@ -183,8 +200,8 @@ const rays = $('rays'); const rayData = [];
 }
 
 // ---------- C: login (with RGB split copies) ----------
-const loginHTML = `<div class="bar">secure-bank-login.example</div><h2>Sign in</h2>
-  <div class="f">user@mail.com</div><div class="f" id="pw">Password</div><div class="b">Log in</div>`;
+const loginHTML = `<div class="bar">secure-bank-login.example</div><h2>${C.login[0]}</h2>
+  <div class="f">user@mail.com</div><div class="f" id="pw">${C.login[1]}</div><div class="b">${C.login[2]}</div>`;
 $('loginwrap').innerHTML = ['m', 'r', 'c', 's'].map(k => `<div id="login_${k}" style="position:absolute;inset:0"><div id="login" class="lg">${loginHTML}</div></div>`).join('');
 
 // ---------- brackets ----------
@@ -210,25 +227,21 @@ const IC = {
   check: '<svg viewBox="0 0 24 24" width="34" height="34"><path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z" fill="none" stroke="#30D158" stroke-width="2"/><path d="M8 12l3 3 5-6" fill="none" stroke="#30D158" stroke-width="2.2"/></svg>',
   lock: '<svg viewBox="0 0 24 24" width="26" height="26"><rect x="5" y="10" width="14" height="11" rx="2" fill="#AEAEB2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="#AEAEB2" stroke-width="2"/></svg>',
 };
-const cardWeb = `<div class="handle"></div><div class="hdr"><div class="dot">${IC.web}</div>Website</div>
+const W_ = C.card;
+const cardWeb = `<div class="handle"></div><div class="hdr"><div class="dot">${IC.web}</div>${W_.website}</div>
   <div class="pv"><div class="pvimg"><b>WINTER SALE</b></div><div class="pvb">
-    <div class="host">${IC.lock} realshop.example</div><div class="ttl">Winter Sale — Up to 50% Off</div>
-    <div class="redir">⚠ bit.ly → realshop.example</div></div></div>
-  <div class="safe">${IC.check} No known risk signs</div>
-  <div class="btn">Open</div>`;
-const cardDanger = `<div class="handle"></div><div class="hdr"><div class="dot">${IC.web}</div>Website</div>
-  <div class="danger"><h3>${IC.shield} Possibly a phishing link</h3>
-    <p>• Disguised address: “my-bank.com” before @ is not the real site</p>
-    <p>• Spelled like a bank, but slightly different</p></div>
+    <div class="host">${IC.lock} realshop.example</div><div class="ttl">${W_.title}</div>
+    <div class="redir">⚠ ${W_.redirect}</div></div></div>
+  <div class="safe">${IC.check} ${W_.safe}</div>
+  <div class="btn">${W_.open}</div>`;
+const cardDanger = `<div class="handle"></div><div class="hdr"><div class="dot">${IC.web}</div>${W_.website}</div>
+  <div class="danger"><h3>${IC.shield} ${W_.danger}</h3>
+    <p>• ${W_.reasons[0]}</p>
+    <p>• ${W_.reasons[1]}</p></div>
   <div class="mono">https://my-bank.com@verify-login.example/</div>
-  <div class="btn red">Open anyway</div>`;
-const types = [
-  ['wifi', 'Wi-Fi', 'Join Wi-Fi', 'Network&nbsp;&nbsp;Cafe_Guest'],
-  ['play', 'Google Play app', 'View in Play Store', 'Opens in Play Store'],
-  ['person', 'Contact', 'Add to contacts', 'Name&nbsp;&nbsp;Alex Kim'],
-  ['cal', 'Event', 'Add to calendar', 'When&nbsp;&nbsp;Fri, Dec 12 · 7:00 PM'],
-  ['pin', 'Location', 'Show on map', 'Coordinates&nbsp;&nbsp;37.5665, 126.9780'],
-];
+  <div class="btn red">${W_.anyway}</div>`;
+const types = ['wifi', 'play', 'person', 'cal', 'pin'].map((ic, i) => [ic, ...W_.types[i]]);
+const TYPE_STEP = .42;
 const cardType = i => { const [ic, label, btn, row] = types[i];
   return `<div class="handle"></div><div class="hdr"><div class="dot">${IC[ic]}</div>${label}</div>
     <div class="pv" style="padding:30px 28px;font-size:32px;color:#ddd">${row}</div>
@@ -242,7 +255,7 @@ function setText(el, txt) { if (el._t !== txt) { el.innerHTML = txt; el._t = txt
 // ---------- render ----------
 window.render = function (t) {
   // A: 0 .. B
-  const aOn = vis(t, 0, T.anywhere - .2, .8, .5);
+  const aOn = vis(t, 0, T.anywhere - .1, .5, .35);
   $('A').style.opacity = aOn;
   if (aOn > 0) {
     const push = 1 + t * .045;
@@ -256,14 +269,14 @@ window.render = function (t) {
   }
 
   // B
-  const bOn = vis(t, T.anywhere - .3, T.never - .1, .35, .2);
+  const bOn = vis(t, T.anywhere - .25, T.never - .05, .25, .15);
   $('B').style.opacity = bOn;
   if (bOn > 0) {
     const lt = t - T.anywhere;
-    $('scanline').style.top = (810 + ((lt * 1.6) % 1) * 300) + 'px';
-    $('scanline').style.opacity = lt < .9 ? 1 : 0;
+    $('scanline').style.top = (810 + ((lt * 2.6) % 1) * 300) + 'px';
+    $('scanline').style.opacity = lt < .4 ? 1 : 0;
     rayData.forEach((d, i) => {
-      const p = eo(S(lt, .9 + d.d * .6, 1.9 + d.d * .6));
+      const p = eo(S(lt, .35 + d.d * .4, 1.05 + d.d * .4));
       const ex = 540 + Math.cos(d.ang) * d.len * p, ey = 960 + Math.sin(d.ang) * d.len * p;
       const l = $('ray' + i); l.setAttribute('x2', ex); l.setAttribute('y2', ey);
       const c = $('chip' + i); c.setAttribute('transform', `translate(${ex},${ey}) scale(${.6 + .4 * p})`); c.setAttribute('opacity', p);
@@ -277,7 +290,7 @@ window.render = function (t) {
   if (cOn > 0) {
     const lt = t - T.never; const fr = Math.floor(t * 30); const r = rnd(fr + 11);
     const typed = '•'.repeat(clamp(Math.floor((lt - .4) * 7), 0, 9));
-    document.querySelectorAll('#pw').forEach(e => setText(e, typed || 'Password'));
+    document.querySelectorAll('#pw').forEach(e => setText(e, typed || C.login[1]));
     const g = r() < .35 ? (r() - .5) * 40 : 0;
     const scale = 1 + lt * .03;
     $('login_r').style.cssText = `position:absolute;inset:0;transform:translate(${g + 8}px,0) scale(${scale});mix-blend-mode:screen;filter:sepia(1) saturate(8) hue-rotate(-50deg);opacity:.35`;
@@ -289,8 +302,8 @@ window.render = function (t) {
   }
 
   // subtitles (A–C)
-  const subs = [[T.world, T.world + 1.5, 'IN A WORLD…'], [T.surface, T.anywhere - .35, 'WHERE EVERY SURFACE<br>HIDES A CODE'],
-                [T.anywhere, T.never - .2, 'ONE SCAN CAN TAKE<br>YOU ANYWHERE'], [T.never, T.winter - .5, 'EVEN WHERE YOU<br>NEVER MEANT TO GO']];
+  const subs = [[T.world, T.surface - .05, C.subs[0]], [T.surface, T.anywhere - .2, C.subs[1]],
+                [T.anywhere, T.never - .1, C.subs[2]], [T.never, T.winter - .3, C.subs[3]]];
   let so = 0;
   for (const [a, b, txt] of subs) { const v = vis(t, a, b, .25, .2); if (v > 0) { so = v; setText($('sub'), txt); } }
   $('sub').style.opacity = so;
@@ -320,7 +333,7 @@ window.render = function (t) {
   }
 
   // P: phone scenes (lock → preview → fakes → right app)
-  const pOn = vis(t, T.lock - .3, T.noads - .3, .3, .25);
+  const pOn = vis(t, T.lock - .3, T.noads1 - .3, .3, .25);
   $('P').style.opacity = pOn;
   if (pOn > 0) {
     const enter = eo(S(t, T.lock - .3, T.lock + .3));
@@ -340,31 +353,31 @@ window.render = function (t) {
     let cardY = 1; let html = cardWeb;
     if (t >= T.preview - .3) cardY = 1 - eo(S(t, T.preview - .3, T.preview + .15));
     if (t >= T.fakes - .2) html = cardDanger;
-    if (t >= T.rightapp - .2) { const i = clamp(Math.floor((t - (T.rightapp - .2)) / .6), 0, types.length - 1); html = cardType(i); }
+    if (t >= T.rightapp - .2) { const i = clamp(Math.floor((t - (T.rightapp - .2)) / TYPE_STEP), 0, types.length - 1); html = cardType(i); }
     setCard(html);
     const swap = (k) => { const d = Math.abs(t - k); return d < .12 ? (1 - d / .12) * 30 : 0; };
     let bump = swap(T.fakes - .2);
-    for (let i = 1; i < types.length; i++) bump += swap(T.rightapp - .2 + i * .6);
+    for (let i = 1; i < types.length; i++) bump += swap(T.rightapp - .2 + i * TYPE_STEP);
     $('card').style.transform = `translateY(${cardY * 1100 + bump}px)`;
     // danger tint
     const dk = vis(t, T.fakes - .2, T.rightapp - .2, .15, .15);
     $('pbg').style.background = `radial-gradient(circle at 50% 60%, rgba(${29 + dk * 90},${29 - dk * 10},${31 - dk * 10},1), #000 70%)`;
     $('phone').style.boxShadow = `0 0 0 4px #2a2a2e, 0 40px 120px rgba(0,0,0,.8), 0 0 ${dk * 140}px rgba(255,69,58,${dk * .7})`;
     // captions
-    const caps = [[T.lock - .1, T.preview - .3, 'LOCKS ON.<br>INSTANTLY.', '#fff'],
-                  [T.preview - .3, T.fakes - .25, 'SEE WHERE IT<br>REALLY GOES', '#fff'],
-                  [T.fakes - .25, T.rightapp - .25, 'CATCHES THE FAKES.<br><span style="font-size:70px;letter-spacing:.12em;color:#FF453A">ON YOUR PHONE</span>', '#fff'],
-                  [T.rightapp - .25, T.noads - .3, 'THE RIGHT APP.<br>EVERY TIME.', '#FFD60A']];
+    const caps = [[T.lock - .1, T.preview - .3, C.caps[0], '#fff'],
+                  [T.preview - .3, T.fakes - .25, C.caps[1], '#fff'],
+                  [T.fakes - .25, T.rightapp - .25, C.caps[2], '#fff'],
+                  [T.rightapp - .25, T.noads1 - .3, C.caps[3], '#FFD60A']];
     let co = 0;
     for (const [a, b, txt, col] of caps) { const v = vis(t, a, b, .2, .15); if (v > 0) { co = v; setText($('pcap'), txt); $('pcap').style.color = col; } }
     $('pcap').style.opacity = co;
   }
 
   // K: no ads / tracking / waiting
-  const kOn = vis(t, T.noads - .25, T.tagline - .3, .15, .3);
+  const kOn = vis(t, T.noads1 - .25, T.tagline - .3, .15, .3);
   $('K').style.opacity = kOn;
   if (kOn > 0) {
-    const hits = [T.noads + .02, T.noads + .78, T.noads + 1.62];
+    const hits = [T.noads1, T.noads2, T.noads3];
     ['k1', 'k2', 'k3'].forEach((id, i) => {
       const p = S(t, hits[i] - .05, hits[i] + .18);
       const sc = 1.8 - .8 * back(p);

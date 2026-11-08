@@ -1,0 +1,11 @@
+{"lang": "ko",
+ "subs": ["세상 모든 곳에", "코드가 숨어 있다", "한 번의 스캔이<br>어디로든 데려간다", "원치 않던<br>곳까지도"],
+ "winter": "이번 겨울", "presents": "PRESENTS",
+ "caps": ["비추는 순간<br>바로 잡는다", "누르기 전에<br>먼저 보여준다", "가짜는 걸러낸다<br><span style=\"font-size:64px;color:#FF453A\">폰 안에서</span>", "언제나<br>딱 맞는 앱으로"],
+ "no": ["광고 없이.", "추적 없이.", "기다림 없이."],
+ "tagline": "더 똑똑한 스캔.", "soon": "Google Play 출시 예정", "feat": "즉시 인식 · 링크 미리보기 · 피싱 차단 · 광고 없음",
+ "login": ["로그인", "비밀번호", "로그인"],
+ "card": {"website": "웹사이트", "title": "겨울 세일 — 최대 50% 할인", "redirect": "bit.ly → realshop.example 로 이동", "safe": "알려진 위험 신호 없음", "open": "열기",
+   "danger": "피싱 위험이 있는 링크예요", "reasons": ["위장된 주소: @ 앞의 “my-bank.com”은 실제 사이트가 아니에요", "은행 이름과 철자가 비슷하지만 달라요"], "anyway": "그래도 열기",
+   "types": [["Wi-Fi", "Wi-Fi 연결", "네트워크&nbsp;&nbsp;Cafe_Guest"], ["Google Play 앱", "Play 스토어에서 보기", "Play 스토어에서 열려요"], ["연락처", "연락처에 추가", "이름&nbsp;&nbsp;김민준"], ["일정", "캘린더에 추가", "일시&nbsp;&nbsp;12월 12일 (금) 오후 7:00"], ["위치", "지도에서 보기", "좌표&nbsp;&nbsp;37.5665, 126.9780"]]}
+}

@@ -1,0 +1,19 @@
+{"voice": {"am_onyx": 0.6, "am_michael": 0.4}, "lang": "en-us",
+ "lines": [
+  ["world",    "In a world...",                                   0.98, 0.0],
+  ["surface",  "where every surface hides a code.",               1.02, 0.12],
+  ["anywhere", "One scan can take you anywhere.",                 1.05, 0.25],
+  ["never",    "Even where you never meant to go.",               1.02, 0.12],
+  ["winter",   "This winter.",                                    0.95, 0.45],
+  ["presents", "Snap Lab presents...",                            1.0,  0.10],
+  ["title",    "Snap Q R.",                                       0.92, 0.15],
+  ["lock",     "It locks on. Instantly.",                         1.08, 0.35],
+  ["preview",  "Shows where a link really goes, before you tap.", 1.1,  0.10],
+  ["fakes",    "Catches the fakes, right on your phone.",         1.1,  0.10],
+  ["rightapp", "And opens the right app. Every time.",            1.1,  0.10],
+  ["noads1",   "No ads.",                                         1.05, 0.30],
+  ["noads2",   "No tracking.",                                    1.05, 0.05],
+  ["noads3",   "No waiting.",                                     1.05, 0.05],
+  ["tagline",  "Snap Q R. Scan smarter.",                         1.0,  0.35],
+  ["soon",     "Coming soon on Google Play.",                     1.05, 0.10]
+ ]}

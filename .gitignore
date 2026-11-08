@@ -11,3 +11,6 @@
 *.apk
 *.aab
 /dist/
+/promo/fonts/black-han-sans/
+/promo/fonts/noto-sans-kr/
+/promo/frames*/

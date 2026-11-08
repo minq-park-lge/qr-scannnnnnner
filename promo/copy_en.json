@@ -1,0 +1,11 @@
+{"lang": "en",
+ "subs": ["IN A WORLD…", "WHERE EVERY SURFACE<br>HIDES A CODE", "ONE SCAN CAN TAKE<br>YOU ANYWHERE", "EVEN WHERE YOU<br>NEVER MEANT TO GO"],
+ "winter": "THIS WINTER", "presents": "PRESENTS",
+ "caps": ["LOCKS ON.<br>INSTANTLY.", "SEE WHERE IT<br>REALLY GOES", "CATCHES THE FAKES.<br><span style=\"font-size:70px;letter-spacing:.12em;color:#FF453A\">ON YOUR PHONE</span>", "THE RIGHT APP.<br>EVERY TIME."],
+ "no": ["NO ADS.", "NO TRACKING.", "NO WAITING."],
+ "tagline": "SCAN SMARTER.", "soon": "Coming soon on Google Play", "feat": "Instant lock · Link preview · Phishing shield · No ads",
+ "login": ["Sign in", "Password", "Log in"],
+ "card": {"website": "Website", "title": "Winter Sale — Up to 50% Off", "redirect": "bit.ly → realshop.example", "safe": "No known risk signs", "open": "Open",
+   "danger": "Possibly a phishing link", "reasons": ["Disguised address: “my-bank.com” before @ is not the real site", "Spelled like a bank, but slightly different"], "anyway": "Open anyway",
+   "types": [["Wi-Fi", "Join Wi-Fi", "Network&nbsp;&nbsp;Cafe_Guest"], ["Google Play app", "View in Play Store", "Opens in Play Store"], ["Contact", "Add to contacts", "Name&nbsp;&nbsp;Alex Kim"], ["Event", "Add to calendar", "When&nbsp;&nbsp;Fri, Dec 12 · 7:00 PM"], ["Location", "Show on map", "Coordinates&nbsp;&nbsp;37.5665, 126.9780"]]}
+}

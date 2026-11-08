@@ -1,37 +1,41 @@
-# SnapQR 광고 쇼츠 (EN, 9:16)
+# SnapQR 광고 쇼츠 (9:16)
 
-`SnapQR_Ad_EN.mp4` — 39.6초, 1080×1920, 30fps, H.264 + AAC, -14 LUFS (YouTube Shorts / Reels / TikTok)
+| 파일 | 내용 |
+|---|---|
+| `SnapQR_Ad_EN.mp4` | 영어 내레이션 + 영어 화면, 28.9초 |
+| `SnapQR_Ad_KO.mp4` | 영어 예고편 내레이션 + 한국어 자막/앱 화면, 28.9초 |
+
+1080×1920, 30fps, H.264 + AAC, -14 LUFS (YouTube Shorts / Reels / TikTok)
 
 ## 구성 (차별화 포인트)
-| 시간 | 내레이션 | 포인트 |
+| 내레이션 (EN) | 한국어 화면 | 포인트 |
 |---|---|---|
-| 0–5s | In a world… where every surface hides a code. | 훅 |
-| 5–12s | One scan can take you anywhere. Even where you never meant to go. | 큐싱 문제 제기 |
-| 12–18s | This winter… Snap Lab presents… SnapQR. | 타이틀 |
-| 18–20s | It locks on… instantly. | 즉시 인식 (강제 줌 없음) |
-| 20–24s | Shows you where a link really goes… before you tap. | 열기 전 프리뷰 / 단축 URL 최종 목적지 |
-| 24–27s | Catches the fakes… right on your phone. | 기기 내 피싱 검사 |
-| 27–30s | And opens the right app. Every time. | 의도에 맞는 앱 연결 |
-| 30–33s | No ads. No tracking. No waiting. | 광고/추적 없음, 속도 |
-| 33–40s | SnapQR. Scan smarter. Coming soon on Google Play. | 엔드 카드 |
+| In a world… where every surface hides a code. | 세상 모든 곳에 / 코드가 숨어 있다 | 훅 |
+| One scan can take you anywhere. Even where you never meant to go. | 한 번의 스캔이 어디로든 데려간다 / 원치 않던 곳까지도 | 큐싱 문제 제기 |
+| This winter. Snap Lab presents… SnapQR. | 이번 겨울 | 타이틀 |
+| It locks on. Instantly. | 비추는 순간 바로 잡는다 | 즉시 인식 (강제 줌 없음) |
+| Shows where a link really goes, before you tap. | 누르기 전에 먼저 보여준다 | 프리뷰 / 단축 URL 최종 목적지 |
+| Catches the fakes, right on your phone. | 가짜는 걸러낸다 · 폰 안에서 | 기기 내 피싱 검사 |
+| And opens the right app. Every time. | 언제나 딱 맞는 앱으로 | 의도에 맞는 앱 연결 |
+| No ads. No tracking. No waiting. | 광고 없이. 추적 없이. 기다림 없이. | 광고/추적 없음, 속도 |
+| SnapQR. Scan smarter. Coming soon on Google Play. | 더 똑똑한 스캔. / Google Play 출시 예정 | 엔드 카드 |
 
-## 다시 만들기
-1. 내레이션: Kokoro TTS (am_onyx 60% + am_michael 40%) → 피치 -2.5반음, 저음 강조, 컴프레서, 리버브
-   ```bash
-   pip install kokoro-onnx soundfile scipy
-   # kokoro-v1.0.onnx, voices-v1.0.bin: github.com/thewh1teagle/kokoro-onnx releases (model-files-v1.0)
-   python make_vo.py <모델폴더> vo
-   ```
-2. 영상 프레임: `ad.html` 을 Playwright(Chromium)로 프레임 단위 렌더 — 타이밍은 `timeline.json`
-   ```bash
-   node render.js "$PWD" frames 30
-   ```
-3. 사운드: `mix.py` 가 BRAAM/히트/라이저/펄스 베드를 합성하고 내레이션 덕킹 후 믹스
-   ```bash
-   python mix.py "$PWD"
-   ffmpeg -framerate 30 -i frames/f_%05d.jpg -i mix.wav -c:v libx264 -crf 19 -pix_fmt yuv420p \
-     -af loudnorm=I=-14:TP=-1.5:LRA=7 -c:a aac -b:a 192k -movflags +faststart -shortest SnapQR_Ad_EN.mp4
-   ```
+## 파이프라인
+- `script_en.json` → `make_vo.py` (Kokoro TTS, am_onyx 60% + am_michael 40%, 피치 -2.5반음 + 저음/컴프/리버브)
+  → 문장별 wav + `timeline.json` (문장 길이에서 장면 타이밍 자동 계산)
+- `ad.html` + `copy_<lang>.json` → `render.js` (Playwright 프레임 렌더)
+- `mix.py` → BRAAM/히트/라이저/글리치/128bpm 펄스 합성 + 내레이션 덕킹
+- `script_ko.json`: 한국어 더빙용 대본 (한국어 TTS 확보 시 사용)
 
-화면 속 도메인은 전부 실제로 존재할 수 없는 `.example` 이며, 실존 브랜드 로고/상표는 사용하지 않음.
-폰트: Bebas Neue, Inter (SIL OFL, @fontsource).
+```bash
+./fetch_fonts.sh                                   # 한국어 폰트
+python make_vo.py <kokoro_dir> vo_en script_en.json  # kokoro-v1.0.onnx / voices-v1.0.bin (kokoro-onnx GitHub releases)
+node render.js "$PWD" frames_en 30 vo_en/timeline.json copy_en.json
+node render.js "$PWD" frames_ko 30 vo_en/timeline.json copy_ko.json
+python mix.py "$PWD" vo_en mix_en.wav
+ffmpeg -framerate 30 -i frames_en/f_%05d.jpg -i mix_en.wav -c:v libx264 -crf 19 -pix_fmt yuv420p \
+  -af loudnorm=I=-14:TP=-1.5:LRA=7 -c:a aac -b:a 192k -movflags +faststart -shortest SnapQR_Ad_EN.mp4
+```
+
+화면 속 도메인은 전부 예약 TLD(`.example`)이며 실존 브랜드 로고/상표는 사용하지 않음.
+폰트: Bebas Neue, Inter, Black Han Sans, Noto Sans KR (SIL OFL, @fontsource).
