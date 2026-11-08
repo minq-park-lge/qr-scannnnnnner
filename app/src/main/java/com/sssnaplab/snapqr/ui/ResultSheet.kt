@@ -1,5 +1,15 @@
 package com.sssnaplab.snapqr.ui
 
+import com.sssnaplab.snapqr.security.RiskReport
+import com.sssnaplab.snapqr.security.RiskReason
+import com.sssnaplab.snapqr.security.RiskLevel
+import com.sssnaplab.snapqr.security.RiskFinding
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.material.icons.outlined.VerifiedUser
+import androidx.compose.material.icons.outlined.GppMaybe
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.AlertDialog
 import com.sssnaplab.snapqr.R
 import androidx.compose.ui.res.stringResource
 import android.text.format.DateUtils
@@ -102,6 +112,7 @@ import kotlin.math.roundToInt
 fun ResultSheet(
     content: ScanContent,
     preview: PreviewState?,
+    risk: RiskReport?,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -112,7 +123,34 @@ fun ResultSheet(
     val target by produceState<TargetApp?>(null, content) {
         value = withContext(Dispatchers.Default) { TargetResolver.resolve(context, content) }
     }
-    val open = { ActionLauncher.open(context, content) }
+    var confirmOpen by remember { mutableStateOf(false) }
+    val danger = risk?.level == RiskLevel.DANGER
+    // 위험 링크는 한 번 더 확인 후 열기
+    val open: () -> Unit = {
+        if (danger) {
+            confirmOpen = true
+        } else {
+            ActionLauncher.open(context, content)
+        }
+    }
+
+    if (confirmOpen) {
+        AlertDialog(
+            onDismissRequest = { confirmOpen = false },
+            icon = { Icon(Icons.Outlined.GppMaybe, null, tint = DangerRed) },
+            title = { Text(stringResource(R.string.confirm_title)) },
+            text = { Text(stringResource(R.string.confirm_message)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirmOpen = false
+                    ActionLauncher.open(context, content)
+                }) { Text(stringResource(R.string.action_open_anyway), color = DangerRed) }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmOpen = false }) { Text(stringResource(R.string.action_cancel)) }
+            },
+        )
+    }
 
     Surface(
         modifier = modifier
@@ -148,6 +186,11 @@ fun ResultSheet(
             Header(content, onDismiss)
             Spacer(Modifier.height(12.dp))
 
+            risk?.let {
+                RiskBanner(it)
+                Spacer(Modifier.height(10.dp))
+            }
+
             when (content) {
                 is ScanContent.Web -> WebPreviewCard(content.uri.toString(), preview, onClick = open)
                 is ScanContent.AppLink -> {
@@ -170,12 +213,16 @@ fun ResultSheet(
                     },
                     modifier = Modifier.weight(1f).height(52.dp),
                     shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = ScanYellow, contentColor = Color.Black),
+                    colors = if (danger) {
+                        ButtonDefaults.buttonColors(containerColor = DangerRed, contentColor = Color.White)
+                    } else {
+                        ButtonDefaults.buttonColors(containerColor = ScanYellow, contentColor = Color.Black)
+                    },
                 ) {
-                    Icon(primaryIcon(content, target), null, Modifier.size(20.dp))
+                    Icon(if (danger) Icons.Outlined.GppMaybe else primaryIcon(content, target), null, Modifier.size(20.dp))
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        primaryLabel(content, target),
+                        if (danger) stringResource(R.string.action_open_anyway) else primaryLabel(content, target),
                         fontWeight = FontWeight.SemiBold,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -191,6 +238,67 @@ fun ResultSheet(
                 }
             }
         }
+    }
+}
+
+private val DangerRed = Color(0xFFFF453A)
+private val CautionAmber = Color(0xFFFF9F0A)
+private val SafeGreen = Color(0xFF30D158)
+
+@Composable
+private fun RiskBanner(report: RiskReport) {
+    when (report.level) {
+        RiskLevel.SAFE -> Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 4.dp)) {
+            Icon(Icons.Outlined.VerifiedUser, null, tint = SafeGreen, modifier = Modifier.size(16.dp))
+            Spacer(Modifier.width(6.dp))
+            Text(stringResource(R.string.risk_safe), fontSize = 13.sp, color = SafeGreen)
+        }
+        else -> {
+            val color = if (report.level == RiskLevel.DANGER) DangerRed else CautionAmber
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(color.copy(alpha = 0.16f))
+                    .padding(12.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        if (report.level == RiskLevel.DANGER) Icons.Outlined.GppMaybe else Icons.Outlined.Warning,
+                        null, tint = color, modifier = Modifier.size(20.dp),
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        stringResource(if (report.level == RiskLevel.DANGER) R.string.risk_title_danger else R.string.risk_title_caution),
+                        color = color,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                }
+                report.sorted.forEach { f ->
+                    Spacer(Modifier.height(4.dp))
+                    Text("• " + riskText(f), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun riskText(f: RiskFinding): String {
+    val a = f.arg.orEmpty()
+    return when (f.reason) {
+        RiskReason.DANGEROUS_SCHEME -> stringResource(R.string.risk_dangerous_scheme, a)
+        RiskReason.USERINFO_TRICK -> stringResource(R.string.risk_userinfo, a)
+        RiskReason.BRAND_IMPERSONATION -> stringResource(R.string.risk_brand, a)
+        RiskReason.BRAND_MENTION -> stringResource(R.string.risk_brand_mention, a)
+        RiskReason.LOOKALIKE_DOMAIN -> stringResource(R.string.risk_lookalike, a)
+        RiskReason.HOMOGRAPH -> stringResource(R.string.risk_homograph, a)
+        RiskReason.APK_DOWNLOAD -> stringResource(R.string.risk_apk)
+        RiskReason.IP_ADDRESS -> stringResource(R.string.risk_ip)
+        RiskReason.SHORTENER -> stringResource(R.string.risk_shortener)
+        RiskReason.SUSPICIOUS_TLD -> stringResource(R.string.risk_tld, a)
+        RiskReason.INSECURE_HTTP -> stringResource(R.string.risk_http)
+        RiskReason.UNUSUAL_PORT -> stringResource(R.string.risk_port, a)
     }
 }
 

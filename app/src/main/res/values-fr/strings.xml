@@ -68,4 +68,23 @@
     <string name="action_add_contact">Ajouter aux contacts</string>
     <string name="action_add_event">Ajouter à l’agenda</string>
     <string name="action_web_search">Rechercher sur le Web</string>
+    <string name="risk_title_danger">Lien d’hameçonnage possible</string>
+    <string name="risk_title_caution">Vérifiez avant d’ouvrir</string>
+    <string name="risk_safe">Aucun signe de risque connu</string>
+    <string name="risk_dangerous_scheme">Exécute un script ou ouvre un fichier local (%1$s:)</string>
+    <string name="risk_userinfo">Adresse déguisée : « %1$s » avant @ n’est pas le vrai site</string>
+    <string name="risk_brand">Utilise le nom %1$s mais n’est pas un domaine officiel</string>
+    <string name="risk_brand_mention">Contient le nom %1$s – vérifiez qu’il est officiel</string>
+    <string name="risk_lookalike">Orthographe proche de %1$s mais différente</string>
+    <string name="risk_homograph">Utilise des caractères trompeurs : %1$s</string>
+    <string name="risk_apk">Télécharge un fichier d’installation d’application (APK)</string>
+    <string name="risk_ip">Utilise une adresse IP au lieu d’un domaine</string>
+    <string name="risk_shortener">Lien raccourci – la vraie destination est masquée</string>
+    <string name="risk_tld">Extension souvent utilisée pour le spam (.%1$s)</string>
+    <string name="risk_http">Connexion non chiffrée (HTTP)</string>
+    <string name="risk_port">Port inhabituel (%1$s)</string>
+    <string name="confirm_title">Ouvrir ce lien ?</string>
+    <string name="confirm_message">Ce lien présente des signes d’hameçonnage. Ne saisissez jamais de mot de passe, numéro de carte ou code de vérification.</string>
+    <string name="action_open_anyway">Ouvrir quand même</string>
+    <string name="action_cancel">Annuler</string>
 </resources>

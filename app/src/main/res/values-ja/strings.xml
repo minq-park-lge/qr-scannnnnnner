@@ -68,4 +68,23 @@
     <string name="action_add_contact">連絡先に追加</string>
     <string name="action_add_event">カレンダーに追加</string>
     <string name="action_web_search">ウェブで検索</string>
+    <string name="risk_title_danger">フィッシングの可能性があるリンクです</string>
+    <string name="risk_title_caution">開く前に確認してください</string>
+    <string name="risk_safe">既知の危険サインはありません</string>
+    <string name="risk_dangerous_scheme">スクリプト実行またはローカルファイルを開くリンクです (%1$s:)</string>
+    <string name="risk_userinfo">偽装アドレス：@ の前の「%1$s」は本当のサイトではありません</string>
+    <string name="risk_brand">%1$s の名前を使っていますが公式ドメインではありません</string>
+    <string name="risk_brand_mention">%1$s の名前を含みます。公式サイトか確認してください</string>
+    <string name="risk_lookalike">%1$s と似ていますが綴りが違います</string>
+    <string name="risk_homograph">紛らわしい文字を使っています：%1$s</string>
+    <string name="risk_apk">アプリのインストールファイル (APK) をダウンロードします</string>
+    <string name="risk_ip">ドメインではなくIPアドレスを使っています</string>
+    <string name="risk_shortener">短縮URLのため実際のリンク先が隠れています</string>
+    <string name="risk_tld">スパムによく使われるドメインです (.%1$s)</string>
+    <string name="risk_http">暗号化されていない接続 (HTTP) です</string>
+    <string name="risk_port">通常と異なるポートです (%1$s)</string>
+    <string name="confirm_title">このリンクを開きますか？</string>
+    <string name="confirm_message">フィッシングの兆候があるリンクです。パスワード、カード番号、認証コードは絶対に入力しないでください。</string>
+    <string name="action_open_anyway">それでも開く</string>
+    <string name="action_cancel">キャンセル</string>
 </resources>

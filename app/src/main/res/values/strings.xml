@@ -70,4 +70,23 @@
     <string name="action_add_contact">Add to contacts</string>
     <string name="action_add_event">Add to calendar</string>
     <string name="action_web_search">Search the web</string>
+    <string name="risk_title_danger">Possibly a phishing link</string>
+    <string name="risk_title_caution">Check before opening</string>
+    <string name="risk_safe">No known risk signs</string>
+    <string name="risk_dangerous_scheme">Runs a script or opens a local file (%1$s:)</string>
+    <string name="risk_userinfo">Disguised address: “%1$s” before @ is not the real site</string>
+    <string name="risk_brand">Uses the name %1$s but is not an official domain</string>
+    <string name="risk_brand_mention">Contains the name %1$s – make sure it’s official</string>
+    <string name="risk_lookalike">Spelled like %1$s but slightly different</string>
+    <string name="risk_homograph">Uses look-alike characters: %1$s</string>
+    <string name="risk_apk">Downloads an app installer (APK)</string>
+    <string name="risk_ip">Uses a raw IP address instead of a domain</string>
+    <string name="risk_shortener">Shortened link – the real destination is hidden</string>
+    <string name="risk_tld">Domain ending often used for spam (.%1$s)</string>
+    <string name="risk_http">Not encrypted (HTTP)</string>
+    <string name="risk_port">Unusual port (%1$s)</string>
+    <string name="confirm_title">Open this link?</string>
+    <string name="confirm_message">This link shows signs of phishing. Never enter passwords, card numbers or verification codes.</string>
+    <string name="action_open_anyway">Open anyway</string>
+    <string name="action_cancel">Cancel</string>
 </resources>

@@ -10,6 +10,11 @@ import com.sssnaplab.snapqr.content.CustomTabsWarmer
 import com.sssnaplab.snapqr.content.ScanContent
 import com.sssnaplab.snapqr.preview.LinkPreviewer
 import com.sssnaplab.snapqr.preview.PreviewState
+import com.sssnaplab.snapqr.security.RiskLevel
+import com.sssnaplab.snapqr.security.RiskReason
+import com.sssnaplab.snapqr.security.RiskReport
+import com.sssnaplab.snapqr.security.UrlRiskAnalyzer
+import com.sssnaplab.snapqr.security.analyze
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -30,6 +35,8 @@ data class ScanUiState(
     val content: ScanContent? = null,
     /** 웹 링크일 때 URL 프리뷰 상태 */
     val preview: PreviewState? = null,
+    /** 큐싱 검사 결과 (링크일 때만). 리다이렉트 최종 URL 확인 후 갱신 */
+    val risk: RiskReport? = null,
     val torchOn: Boolean = false,
     val torchAvailable: Boolean = false,
 )
@@ -107,11 +114,17 @@ class ScanViewModel(app: Application) : AndroidViewModel(app) {
             }
             else -> null
         }
-        _state.update {
-            it.copy(content = content, preview = previewUri?.let { PreviewState.Loading })
+        // 로컬 휴리스틱이라 즉시 계산됨 (1ms 미만) → 카드와 동시에 표시
+        val risk = when (content) {
+            is ScanContent.Web -> UrlRiskAnalyzer.analyze(content.uri)
+            is ScanContent.AppLink -> UrlRiskAnalyzer.analyze(content.uri.scheme, null)
+            else -> null
         }
-        // 웹 링크면 브라우저에 미리 로딩 요청 → 열기 버튼 누르면 즉시 표시
-        if (content is ScanContent.Web && content.playStorePackage == null) {
+        _state.update {
+            it.copy(content = content, preview = previewUri?.let { PreviewState.Loading }, risk = risk)
+        }
+        // 위험 신호가 없는 웹 링크만 브라우저에 미리 로딩 → 열기 누르면 즉시 표시
+        if (content is ScanContent.Web && content.playStorePackage == null && risk?.level == RiskLevel.SAFE) {
             CustomTabsWarmer.prefetch(content.uri)
         }
         previewJob?.cancel()
@@ -124,9 +137,29 @@ class ScanViewModel(app: Application) : AndroidViewModel(app) {
                 } catch (e: Exception) {
                     PreviewState.Failed(e.message ?: e.javaClass.simpleName)
                 }
-                _state.update { s -> if (s.content === content) s.copy(preview = result) else s }
+                _state.update { s ->
+                    if (s.content !== content) return@update s
+                    s.copy(preview = result, risk = refineRisk(s.risk, result))
+                }
+                // 단축 URL 등이 안전한 최종 목적지로 확인되면 그때 프리페치
+                val now = _state.value
+                if (now.content === content && risk?.level != RiskLevel.SAFE &&
+                    now.risk?.level == RiskLevel.SAFE && result is PreviewState.Loaded
+                ) {
+                    CustomTabsWarmer.prefetch(result.preview.finalUrl)
+                }
             }
         }
+    }
+
+    /** 리다이렉트를 따라간 최종 URL 로 재검사 (단축 URL 의 실제 목적지 판정) */
+    private fun refineRisk(initial: RiskReport?, preview: PreviewState): RiskReport? {
+        if (initial == null || preview !is PreviewState.Loaded) return initial
+        val finalReport = UrlRiskAnalyzer.analyze(preview.preview.finalUrl)
+        val kept = initial.findings.filter {
+            it.reason != RiskReason.SHORTENER && it.reason != RiskReason.INSECURE_HTTP
+        }
+        return RiskReport(kept) + finalReport
     }
 
     fun dismissResult() {
@@ -134,7 +167,7 @@ class ScanViewModel(app: Application) : AndroidViewModel(app) {
         suppressedValue = locked.rawValue
         suppressedLastSeen = SystemClock.elapsedRealtime()
         previewJob?.cancel()
-        _state.update { it.copy(locked = null, content = null, preview = null) }
+        _state.update { it.copy(locked = null, content = null, preview = null, risk = null) }
     }
 
     fun toggleTorch() = _state.update { it.copy(torchOn = !it.torchOn) }

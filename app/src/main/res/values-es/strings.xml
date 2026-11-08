@@ -68,4 +68,23 @@
     <string name="action_add_contact">Añadir a contactos</string>
     <string name="action_add_event">Añadir al calendario</string>
     <string name="action_web_search">Buscar en la web</string>
+    <string name="risk_title_danger">Posible enlace de phishing</string>
+    <string name="risk_title_caution">Revisa antes de abrir</string>
+    <string name="risk_safe">Sin señales de riesgo conocidas</string>
+    <string name="risk_dangerous_scheme">Ejecuta un script o abre un archivo local (%1$s:)</string>
+    <string name="risk_userinfo">Dirección disfrazada: “%1$s” antes de @ no es el sitio real</string>
+    <string name="risk_brand">Usa el nombre %1$s pero no es un dominio oficial</string>
+    <string name="risk_brand_mention">Contiene el nombre %1$s: comprueba que sea oficial</string>
+    <string name="risk_lookalike">Se escribe parecido a %1$s pero es distinto</string>
+    <string name="risk_homograph">Usa caracteres engañosos: %1$s</string>
+    <string name="risk_apk">Descarga un instalador de aplicación (APK)</string>
+    <string name="risk_ip">Usa una dirección IP en lugar de un dominio</string>
+    <string name="risk_shortener">Enlace acortado: el destino real está oculto</string>
+    <string name="risk_tld">Terminación de dominio usada a menudo para spam (.%1$s)</string>
+    <string name="risk_http">Conexión sin cifrar (HTTP)</string>
+    <string name="risk_port">Puerto inusual (%1$s)</string>
+    <string name="confirm_title">¿Abrir este enlace?</string>
+    <string name="confirm_message">Este enlace muestra señales de phishing. Nunca introduzcas contraseñas, números de tarjeta ni códigos de verificación.</string>
+    <string name="action_open_anyway">Abrir de todos modos</string>
+    <string name="action_cancel">Cancelar</string>
 </resources>

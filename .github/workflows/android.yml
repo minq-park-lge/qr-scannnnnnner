@@ -27,7 +27,7 @@ jobs:
       - name: Build debug & release APK
         run: |
           echo "sdk.dir=$ANDROID_HOME" > local.properties
-          ./gradlew --no-daemon assembleDebug assembleRelease
+          ./gradlew --no-daemon testDebugUnitTest assembleDebug assembleRelease
 
       - name: Collect APKs
         run: |

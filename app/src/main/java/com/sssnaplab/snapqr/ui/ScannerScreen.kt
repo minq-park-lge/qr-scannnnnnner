@@ -161,6 +161,7 @@ fun ScannerScreen(vm: ScanViewModel = viewModel()) {
                 ResultSheet(
                     content = content,
                     preview = if (state.content === content) state.preview else null,
+                    risk = if (state.content === content) state.risk else null,
                     onDismiss = vm::dismissResult,
                 )
             }

@@ -68,4 +68,23 @@
     <string name="action_add_contact">연락처에 추가</string>
     <string name="action_add_event">캘린더에 추가</string>
     <string name="action_web_search">웹에서 검색</string>
+    <string name="risk_title_danger">피싱 위험이 있는 링크예요</string>
+    <string name="risk_title_caution">열기 전에 확인하세요</string>
+    <string name="risk_safe">알려진 위험 신호 없음</string>
+    <string name="risk_dangerous_scheme">스크립트를 실행하거나 기기 파일을 여는 링크예요 (%1$s:)</string>
+    <string name="risk_userinfo">위장된 주소: @ 앞의 “%1$s”는 실제 사이트가 아니에요</string>
+    <string name="risk_brand">%1$s 이름을 쓰지만 공식 도메인이 아니에요</string>
+    <string name="risk_brand_mention">%1$s 이름이 포함돼 있어요. 공식 사이트인지 확인하세요</string>
+    <string name="risk_lookalike">%1$s와 철자가 비슷하지만 달라요</string>
+    <string name="risk_homograph">비슷하게 생긴 다른 문자를 사용해요: %1$s</string>
+    <string name="risk_apk">앱 설치 파일(APK)을 내려받아요</string>
+    <string name="risk_ip">도메인 대신 IP 주소를 사용해요</string>
+    <string name="risk_shortener">단축 URL이라 실제 목적지가 숨겨져 있어요</string>
+    <string name="risk_tld">스팸에 자주 쓰이는 도메인이에요 (.%1$s)</string>
+    <string name="risk_http">암호화되지 않은 연결(HTTP)이에요</string>
+    <string name="risk_port">일반적이지 않은 포트를 사용해요 (%1$s)</string>
+    <string name="confirm_title">이 링크를 열까요?</string>
+    <string name="confirm_message">피싱 징후가 있는 링크예요. 비밀번호, 카드번호, 인증번호는 절대 입력하지 마세요.</string>
+    <string name="action_open_anyway">그래도 열기</string>
+    <string name="action_cancel">취소</string>
 </resources>

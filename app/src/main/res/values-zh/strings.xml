@@ -68,4 +68,23 @@
     <string name="action_add_contact">添加到联系人</string>
     <string name="action_add_event">添加到日历</string>
     <string name="action_web_search">网页搜索</string>
+    <string name="risk_title_danger">可能是钓鱼链接</string>
+    <string name="risk_title_caution">打开前请确认</string>
+    <string name="risk_safe">未发现已知风险迹象</string>
+    <string name="risk_dangerous_scheme">会执行脚本或打开本地文件 (%1$s:)</string>
+    <string name="risk_userinfo">伪装地址：@ 前的“%1$s”不是真实网站</string>
+    <string name="risk_brand">使用了 %1$s 的名称，但不是官方域名</string>
+    <string name="risk_brand_mention">包含 %1$s 名称，请确认是否为官方网站</string>
+    <string name="risk_lookalike">拼写与 %1$s 相似但不同</string>
+    <string name="risk_homograph">使用了形似字符：%1$s</string>
+    <string name="risk_apk">会下载应用安装包 (APK)</string>
+    <string name="risk_ip">使用 IP 地址而非域名</string>
+    <string name="risk_shortener">短链接，真实目标被隐藏</string>
+    <string name="risk_tld">常被用于垃圾信息的域名后缀 (.%1$s)</string>
+    <string name="risk_http">未加密连接 (HTTP)</string>
+    <string name="risk_port">非常用端口 (%1$s)</string>
+    <string name="confirm_title">要打开此链接吗？</string>
+    <string name="confirm_message">此链接有钓鱼迹象。切勿输入密码、卡号或验证码。</string>
+    <string name="action_open_anyway">仍然打开</string>
+    <string name="action_cancel">取消</string>
 </resources>
